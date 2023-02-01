@@ -1,0 +1,81 @@
+import math
+
+import pandas as pd
+import numpy as np
+
+from .data import _Data, Column
+from .frequencies import Frequency
+from .resample import Resample
+
+from src.helpers import JSONHelper
+from src.helpers import PlotHelper
+
+
+class IMU(_Data):
+    def __init__(self, base_path, csv_file):
+        self._csv_file = csv_file
+        self._base_path = base_path
+        self._csv_path = self.get_csv_path()
+        _Data.__init__(self, csv_file)
+
+    def _get_accelerometer_raw_data(self):
+        data_acc_raw = self._get_column_data(Column.ACCELEROMETER.value)
+        nb_imu_rows_to_keep = math.ceil(self._get_total_recording_time() * Frequency.IMU.value)
+        return data_acc_raw.iloc[:nb_imu_rows_to_keep]
+
+    def _compute_angle(self, resampled_data):
+        accelerometer_x1 = resampled_data[:, 18]
+        accelerometer_y1 = resampled_data[:, 19]
+        accelerometer_z1 = resampled_data[:, 20]
+
+        # accelerometer_x = []
+        # accelerometer_y = []
+        accelerometer_z = []
+
+        for i, column in enumerate(resampled_data):
+            total = math.sqrt(accelerometer_x1[i] ** 2 + accelerometer_y1[i] ** 2 + accelerometer_z1[i] ** 2)
+
+            if total == 0.0:
+                # accelerometer_x.append(math.asin(0) * 180 / math.pi)
+                # accelerometer_y.append(math.asin(0) * 180 / math.pi)
+                accelerometer_z.append(math.acos(0) * 180 / math.pi)
+            else:
+                # accelerometer_x.append(math.asin(accelerometer_x1[i] / total) * 180 / math.pi)
+                # accelerometer_y.append(math.asin(accelerometer_y1[i] / total) * 180 / math.pi)
+                accelerometer_z.append(math.acos(accelerometer_z1[i] / total) * 180 / math.pi)
+
+        emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
+        time_emg_trig = self._dataframe.iloc[:, self._dataframe.columns.get_loc(emg_trig_data.columns[0]) - 1]
+        data = pd.concat([time_emg_trig, pd.DataFrame(accelerometer_z, columns=['y'])], axis=1).dropna()
+        data.set_index(data.columns[0], inplace=True)
+
+        return data
+
+    def _reduce_angle_data(self, data):
+        data = data.reset_index(drop=False)
+        data_length = len(str(len(data)))
+
+        i = 0
+        step = '1'
+        while i < (data_length - 3):
+            i = i + 1
+            step += '0'
+
+        data = data.iloc[::int(step), :]
+        JSONHelper.write_angle_file(self._base_path, self._csv_path, data, prefix='small')
+
+    def start_processing(self):
+        indexes = np.where(self._dataframe.iloc[:, 0].isna())[0]
+
+        if len(indexes) > 0:
+            self._dataframe = self._dataframe.iloc[:indexes[0], :]
+
+        data_acc = self._get_accelerometer_raw_data()
+        resampled_acc_data = Resample(data_acc, Frequency.EMG_TRIG.value, Frequency.IMU.value).get_data()
+        angle_data = self._compute_angle(resampled_acc_data)
+        self._reduce_angle_data(angle_data)
+        plot_helper = PlotHelper(self._csv_path, angle_data)
+        plot_helper.build_plot(legend='z-axis angle', x_label='Seconds', y_label='Degrees')
+        plot_helper.save_plot(self._base_path, prefix='plot_angle')
+        angle_data.reset_index(inplace=True)
+        # JSONHelper.write_angle_file(self._base_path, self._csv_path, angle_data, prefix='full')
