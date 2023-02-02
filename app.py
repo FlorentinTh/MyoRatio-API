@@ -5,6 +5,8 @@ from glob import glob
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPTokenAuth
 
+from gevent.pywsgi import WSGIServer
+
 from simple_schema_validator import schema_validator
 
 from pandas import errors as pd_errors
@@ -339,7 +341,10 @@ def generate_report():
     return jsonify(output), 201
 
 
+def main():
+    http = WSGIServer((Configuration.HOST.value, Configuration.PORT.value), app.wsgi_app)
+    http.serve_forever()
+
+
 if __name__ == '__main__':
-    from waitress import serve
-    serve(app, host=Configuration.HOST.value, port=Configuration.PORT.value)
-    os.system("pause")
+    main()
