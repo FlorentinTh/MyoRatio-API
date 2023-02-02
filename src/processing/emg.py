@@ -101,7 +101,7 @@ class EMG(_Data):
             "y": data.index[data['X[s]'] == point_y].tolist()[0]
         }
 
-    def start_processing(self, window_size, point_x, point_y):
+    def start_processing(self, window_size, point_1x, point_2x):
         self._get_emg_trig_raw_data()
         self._get_emg_im_raw_data()
 
@@ -114,7 +114,7 @@ class EMG(_Data):
         removed_mean_all_emg_data = self._remove_mean_all_emg_data(resampled_emg_im_data)
         all_emg_filtered_data = self._filter_all_emg_data(removed_mean_all_emg_data)
         all_emg_rms_envelope_data = self._extract_rms_envelope_from_all_emg_data(all_emg_filtered_data, window_size)
-        points = self._get_point_index(all_emg_rms_envelope_data, point_x, point_y)
+        points = self._get_point_index(all_emg_rms_envelope_data, point_1x, point_2x)
         all_emg_between_points_data = all_emg_rms_envelope_data.iloc[points['x']:points['y'], :]
 
         normalized_envelope_all_emg_data = Resample(all_emg_between_points_data,

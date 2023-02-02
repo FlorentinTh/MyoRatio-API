@@ -152,8 +152,8 @@ def generate_emg_analysis():
         'stage': str,
         'participant': str,
         'iteration': int,
-        'point_x': float,
-        'point_y': float
+        'point_1x': float,
+        'point_2x': float
     }
 
     validation = validate_request_body(body, schema)
@@ -198,7 +198,7 @@ def generate_emg_analysis():
             }
             return jsonify(output), 500
 
-        emg.start_processing(body['window_size'], body['point_x'], body['point_y'])
+        emg.start_processing(body['window_size'], body['point_1x'], body['point_2x'])
     else:
         output = {
             "code": 404,
