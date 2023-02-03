@@ -11,7 +11,7 @@ from simple_schema_validator import schema_validator
 
 from pandas import errors as pd_errors
 
-from src.configuration import Configuration
+from configuration import Configuration
 from src.utils import APIKey
 
 from src.processing import EMG

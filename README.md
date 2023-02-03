@@ -7,7 +7,7 @@ API of the Application to process EMG Trigno data
 pip install -r requirements.txt
 ```
 ## Configure
-Change ```src/configuration.py``` file content according to your needs.
+Change ```configuration.py``` file content according to your needs.
 
 ## Build
 ```shell
