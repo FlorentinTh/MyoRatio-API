@@ -315,7 +315,7 @@ def generate_report():
 
     base_path = os.path.join(os.path.normpath(body['data_path']), '.metadata', f'.{body["analysis"]}')
     html_path = os.path.join(base_path, f'{body["analysis"]}_report.html')
-    output_path = os.path.join(base_path, f'{body["analysis"]}_report.pdf')
+    output_path = os.path.join(os.path.normpath(body['data_path']), f'{body["analysis"]}_report.pdf')
 
     try:
         PDFHelper.generate_pdf_from_html(html_path, output_path)
