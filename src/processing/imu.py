@@ -12,21 +12,27 @@ from src.helpers import PlotHelper
 
 
 class IMU(_Data):
-    def __init__(self, base_path, csv_file):
+    def __init__(self, base_path, csv_file, analysis):
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
+        self._analysis = analysis
         _Data.__init__(self, csv_file)
 
     def _get_accelerometer_raw_data(self):
-        data_acc_raw = self._get_column_data(Column.ACCELEROMETER.value)
+        if self._analysis == 'extension' or \
+                self._analysis == 'flexion':
+            data_acc_raw = self._get_column_data(Column.ACCELEROMETER_TIBIALIS_ANTERIOR.value)
+        else:
+            data_acc_raw = self._get_column_data(Column.ACCELEROMETER_TENSOR_FASCIAE_LATAE.value)
+
         nb_imu_rows_to_keep = math.ceil(self._get_total_recording_time() * Frequency.IMU.value)
         return data_acc_raw.iloc[:nb_imu_rows_to_keep]
 
     def _compute_angle(self, resampled_data):
-        accelerometer_x1 = resampled_data[:, 18]
-        accelerometer_y1 = resampled_data[:, 19]
-        accelerometer_z1 = resampled_data[:, 20]
+        accelerometer_x1 = resampled_data[:, 0]
+        accelerometer_y1 = resampled_data[:, 1]
+        accelerometer_z1 = resampled_data[:, 2]
 
         # accelerometer_x = []
         # accelerometer_y = []

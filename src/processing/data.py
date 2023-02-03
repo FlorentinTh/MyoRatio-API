@@ -7,7 +7,8 @@ from enum import Enum
 class Column(Enum):
     EMG_TRIG = 0
     EMG_IM = 1
-    ACCELEROMETER = 2
+    ACCELEROMETER_TIBIALIS_ANTERIOR = 2
+    ACCELEROMETER_TENSOR_FASCIAE_LATAE = 3
 
 
 class _Data:
@@ -25,8 +26,10 @@ class _Data:
             return self._dataframe.filter(regex=r'^(?=.*EMG)(?!.*\(IM\)).*')
         elif column == 1:
             return self._dataframe.filter(regex=r'^(?=.*EMG)(?=.*\(IM\)).*')
+        elif column == 2:
+            return self._dataframe.filter(regex=r'^(?=.*TIBIALIS ANTERIOR)(?=.*ACC).*')
         else:
-            return self._dataframe.filter(like='ACC')
+            return self._dataframe.filter(regex=r'^(?=.*TENSOR FASCIAE LATAE)(?=.*ACC).*')
 
     def _get_time_emg(self, data, skip=None):
         if skip is None:

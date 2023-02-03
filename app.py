@@ -87,7 +87,7 @@ def generate_imu_analysis():
                         f'small_angle_{csv_filename}.json' not in files:
                     imu = None
                     try:
-                        imu = IMU(data_path_parameter, csv_file)
+                        imu = IMU(data_path_parameter, csv_file, body['analysis'])
                     except pd_errors.ParserError:
                         if imu is not None:
                             error = f'Error occurs while trying to read: {imu.get_csv_path()[1]}'
