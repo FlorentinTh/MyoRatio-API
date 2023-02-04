@@ -1,11 +1,14 @@
+from gevent import monkey
+monkey.patch_all()
+
 import os
 import bcrypt
 from glob import glob
 
+from gevent.pywsgi import WSGIServer
+
 from flask import Flask, jsonify, request
 from flask_httpauth import HTTPTokenAuth
-
-from gevent.pywsgi import WSGIServer
 
 from simple_schema_validator import schema_validator
 
@@ -342,8 +345,11 @@ def generate_report():
 
 
 def main():
-    http = WSGIServer((Configuration.HOST.value, Configuration.PORT.value), app.wsgi_app)
-    http.serve_forever()
+    http = WSGIServer((Configuration.HOST.value, Configuration.PORT.value), app)
+    try:
+        http.serve_forever()
+    except KeyboardInterrupt:
+        http.stop()
 
 
 if __name__ == '__main__':
