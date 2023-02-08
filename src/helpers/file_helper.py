@@ -7,4 +7,4 @@ class FileHelper:
         split_path = csv_path[0].split(os.sep)
         analysis = split_path[len(split_path) - 2]
         participant = split_path[len(split_path) - 1]
-        return os.path.join(base_path, '.metadata', f'.{analysis}', participant)
+        return os.path.join(base_path, 'analysis', '.metadata', analysis, participant)

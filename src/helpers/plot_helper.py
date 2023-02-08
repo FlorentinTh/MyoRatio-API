@@ -35,6 +35,6 @@ class PlotHelper:
         analysis = split_path[len(split_path) - 2]
         participant = split_path[len(split_path) - 1]
 
-        plot_path = os.path.join(base_path, '.metadata', f'.{analysis}', participant, filename)
+        plot_path = os.path.join(base_path, 'analysis', analysis, participant, filename)
         plt.savefig(plot_path)
         plt.close()
