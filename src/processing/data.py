@@ -1,5 +1,7 @@
 import os
+
 import pandas as pd
+import dask.dataframe as dd
 
 from enum import Enum
 
@@ -12,13 +14,15 @@ class Column(Enum):
 
 
 class _Data:
-    def __init__(self, csv_file):
+    def __init__(self, csv_file, is_imu=False):
         self._csv_file = csv_file
 
         try:
-            self._dataframe = pd.read_csv(self._csv_file)
-        except pd.errors.ParserError:
-            error = f'Error while trying to read: {self.get_csv_path()[1]}'
+            if is_imu is True:
+                self._dataframe = dd.read_csv(self._csv_file).compute()
+            else:
+                self._dataframe = pd.read_csv(self._csv_file, engine='c', encoding='utf-8')
+        except pd.errors.ParserError as error:
             raise pd.errors.ParserError(error)
 
     def _get_column_data(self, column):

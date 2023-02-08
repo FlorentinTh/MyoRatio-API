@@ -12,11 +12,11 @@ class Areas:
 
         for csv_file in csv_files:
             try:
-                dataframe = pd.read_csv(csv_file, sep='\t', encoding='utf-8')
+                dataframe = pd.read_csv(csv_file, sep='\t', encoding='utf-8', engine='c')
                 dataframe.set_index(dataframe.columns[0], inplace=True)
                 self._dataframes.append(dataframe)
-            except pd.errors.ParserError:
-                raise pd.errors.ParserError()
+            except pd.errors.ParserError as error:
+                raise pd.errors.ParserError(error)
 
     @staticmethod
     def _compute_area(data):

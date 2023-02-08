@@ -17,7 +17,7 @@ class IMU(_Data):
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
         self._analysis = analysis
-        _Data.__init__(self, csv_file)
+        _Data.__init__(self, csv_file, is_imu=True)
 
     def _get_accelerometer_raw_data(self):
         if self._analysis == 'extension' or \

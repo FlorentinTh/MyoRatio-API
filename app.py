@@ -5,6 +5,9 @@ import os
 import bcrypt
 from glob import glob
 
+from dask import delayed
+from dask import compute
+
 from gevent.pywsgi import WSGIServer
 
 from flask import Flask, jsonify, request
@@ -59,6 +62,60 @@ def verify_apikey(key):
     return bcrypt.checkpw(key.encode('utf-8'), api_key_hashed)
 
 
+@delayed
+def parallel_imu_processing(body, participant):
+    data_path_parameter = os.path.normpath(body['data_path'])
+    data_path = os.path.join(data_path_parameter, 'analysis', body['analysis'], participant)
+    csv_files = glob(os.path.join(data_path, "*.csv"))
+
+    if len(csv_files) > 0:
+        for csv_file in csv_files:
+            csv_filename, _ = os.path.basename(csv_file).rsplit('.', 1)
+            files = os.listdir(os.path.join(data_path_parameter, 'analysis',
+                                            '.metadata', body["analysis"], participant))
+
+            if f'small_angle_{csv_filename}.json' not in files:
+                imu = None
+                try:
+                    imu = IMU(data_path_parameter, csv_file, body['analysis'])
+                except pd_errors.ParserError as error:
+                    if imu is not None:
+                        message = f'Error occurs while trying to read: {imu.get_csv_path()[1]}'
+                    else:
+                        message = 'Error occurs while trying to read CSV files'
+
+                    return {
+                        "code": 500,
+                        "status": "failed",
+                        "payload": {
+                            "message": message,
+                            "details": str(error)
+                        }
+                    }
+
+                try:
+                    imu.start_processing()
+                except Exception as e:
+                    return {
+                        "code": 500,
+                        "status": "failed",
+                        "payload": {
+                            "message": f'Error occurs while trying to process IMU data. Related file: '
+                                       f'{imu.get_csv_path()[1]}',
+                            "details": str(e)
+                        }
+                    }
+    else:
+        return {
+            "code": 404,
+            "status": "failed",
+            "payload": {
+                "message": 'Missing data',
+                "details": f'No CSV files found in path: {data_path}'
+            }
+        }
+
+
 @app.route('/imu/', methods=['POST'])
 @auth.login_required
 def generate_imu_analysis():
@@ -75,61 +132,18 @@ def generate_imu_analysis():
     if validation is not True:
         return jsonify(validation), 400
 
-    data_path_parameter = os.path.normpath(body['data_path'])
+    participants = []
 
     for participant in body['participants']:
-        data_path = os.path.join(data_path_parameter, body['analysis'], participant)
-        csv_files = glob(os.path.join(data_path, "*.csv"))
+        participants.append(parallel_imu_processing(body, participant))
 
-        if len(csv_files) > 0:
-            for csv_file in csv_files:
-                csv_filename, _ = os.path.basename(csv_file).rsplit('.', 1)
-                files = os.listdir(os.path.join(data_path_parameter, '.metadata', f'.{body["analysis"]}', participant))
+    outputs = compute(participants)
 
-                if f'plot_angle_{csv_filename}.svg' not in files or \
-                        f'small_angle_{csv_filename}.json' not in files:
-                    imu = None
-                    try:
-                        imu = IMU(data_path_parameter, csv_file, body['analysis'])
-                    except pd_errors.ParserError:
-                        if imu is not None:
-                            error = f'Error occurs while trying to read: {imu.get_csv_path()[1]}'
-                        else:
-                            error = 'Error occurs while trying to read CSV files'
+    for i in range(len(outputs[0])):
+        output = outputs[0][i]
 
-                        output = {
-                            "code": 500,
-                            "status": "failed",
-                            "payload": {
-                                "message": error,
-                                "details": None
-                            }
-                        }
-                        return jsonify(output), 500
-
-                    try:
-                        imu.start_processing()
-                    except Exception as e:
-                        output = {
-                            "code": 500,
-                            "status": "failed",
-                            "payload": {
-                                "message": f'Error occurs while trying to process IMU data. Related file: '
-                                           f'{imu.get_csv_path()[1]}',
-                                "details": str(e)
-                            }
-                        }
-                        return jsonify(output), 500
-        else:
-            output = {
-                "code": 404,
-                "status": "failed",
-                "payload": {
-                    "message": f'No CSV files found in path: {data_path}',
-                    "details": None
-                }
-            }
-            return jsonify(output), 404
+        if output is not None:
+            return jsonify(output), output['code']
 
     output = {
         "code": 201,
@@ -164,19 +178,19 @@ def generate_emg_analysis():
     if validation is not True:
         return jsonify(validation), 400
 
-    data_path = os.path.join(os.path.normpath(body['data_path']), body['analysis'], body['participant'])
+    data_path = os.path.join(os.path.normpath(body['data_path']), 'analysis', body['analysis'], body['participant'])
     csv_files = glob(os.path.join(data_path, "*.csv"))
 
     if len(csv_files) > 0:
         try:
             csv_file = csv_files[body['iteration']]
-        except IndexError:
+        except IndexError as error:
             output = {
                 "code": 404,
                 "status": "failed",
                 "payload": {
                     "message": f'cannot find a CSV file for iteration {body["iteration"]}',
-                    "details": None
+                    "details": str(error)
                 }
             }
             return jsonify(output), 500
@@ -185,18 +199,18 @@ def generate_emg_analysis():
 
         try:
             emg = EMG(body['data_path'], csv_file, body['stage'])
-        except pd_errors.ParserError:
+        except pd_errors.ParserError as error:
             if emg is not None:
-                error = f'Error occurs while trying to read: {emg.get_csv_path()[1]}'
+                message = f'Error occurs while trying to read: {emg.get_csv_path()[1]}'
             else:
-                error = 'Error occurs while trying to read CSV files'
+                message = 'Error occurs while trying to read CSV files'
 
             output = {
                 "code": 500,
                 "status": "failed",
                 "payload": {
-                    "message": error,
-                    "details": None
+                    "message": message,
+                    "details": str(error)
                 }
             }
             return jsonify(output), 500
@@ -207,8 +221,8 @@ def generate_emg_analysis():
             "code": 404,
             "status": "failed",
             "payload": {
-                "message": f'No CSV file founded in path: {data_path}',
-                "details": None
+                "message": 'Missing data',
+                "details": f'No CSV file founded in path: {data_path}'
             }
         }
         return jsonify(output), 404
@@ -225,6 +239,48 @@ def generate_emg_analysis():
         }
     }
     return jsonify(output), 201
+
+
+@delayed
+def parallel_areas_processing(body, participant):
+    data_path = os.path.join(os.path.normpath(body['data_path']), 'analysis', '.metadata',
+                             body["analysis"], participant)
+    csv_files = glob(os.path.join(data_path, f'envelope_{body["stage"]}_*.csv'))
+
+    if len(csv_files) > 0:
+        try:
+            areas = Areas(data_path, csv_files)
+        except pd_errors.ParserError as error:
+            return {
+                "code": 500,
+                "status": "failed",
+                "payload": {
+                    "message": 'Error occurs while trying to read CSV files',
+                    "details": str(error)
+                }
+            }
+
+        try:
+            areas.start_processing()
+        except Exception as error:
+            return {
+                "code": 500,
+                "status": "failed",
+                "payload": {
+                    "message": f'Error occurs while trying to process areas',
+                    "details": str(error)
+                }
+            }
+
+    else:
+        return {
+            "code": 404,
+            "status": "failed",
+            "payload": {
+                "message": 'Missing data',
+                "details": f'No CSV files found in path: {data_path}'
+            }
+        }
 
 
 @app.route('/areas/', methods=['POST'])
@@ -244,49 +300,18 @@ def generate_areas():
     if validation is not True:
         return jsonify(validation), 400
 
+    participants = []
+
     for participant in body['participants']:
-        data_path = os.path.join(os.path.normpath(body['data_path']), '.metadata', f'.{body["analysis"]}', participant)
-        csv_files = glob(os.path.join(data_path, f'envelope_{body["stage"]}_*.csv'))
+        participants.append(parallel_areas_processing(body, participant))
 
-        if len(csv_files) > 0:
-            try:
-                areas = Areas(data_path, csv_files)
-            except pd_errors.ParserError:
-                error = 'Error occurs while trying to read CSV files'
+    outputs = compute(participants)
 
-                output = {
-                    "code": 500,
-                    "status": "failed",
-                    "payload": {
-                        "message": error,
-                        "details": None
-                    }
-                }
-                return jsonify(output), 500
+    for i in range(len(outputs[0])):
+        output = outputs[0][i]
 
-            try:
-                areas.start_processing()
-            except Exception as e:
-                output = {
-                    "code": 500,
-                    "status": "failed",
-                    "payload": {
-                        "message": f'Error occurs while trying to process areas',
-                        "details": str(e)
-                    }
-                }
-                return jsonify(output), 500
-
-        else:
-            output = {
-                "code": 404,
-                "status": "failed",
-                "payload": {
-                    "message": f'No CSV files found in path: {data_path}',
-                    "details": None
-                }
-            }
-            return jsonify(output), 404
+        if output is not None:
+            return jsonify(output), output['code']
 
     output = {
         "code": 201,
@@ -316,19 +341,19 @@ def generate_report():
     if validation is not True:
         return jsonify(validation), 400
 
-    base_path = os.path.join(os.path.normpath(body['data_path']), '.metadata', f'.{body["analysis"]}')
+    base_path = os.path.join(os.path.normpath(body['data_path']), 'analysis', '.metadata', body["analysis"])
     html_path = os.path.join(base_path, f'{body["analysis"]}_report.html')
-    output_path = os.path.join(os.path.normpath(body['data_path']), f'{body["analysis"]}_report.pdf')
+    output_path = os.path.join(os.path.normpath(body['data_path']), 'analysis', f'{body["analysis"]}_report.pdf')
 
     try:
         PDFHelper.generate_pdf_from_html(html_path, output_path)
-    except Exception as e:
+    except Exception as error:
         output = {
             "code": 500,
             "status": "failed",
             "payload": {
                 "message": f'Error occurs while trying to generate PDF report',
-                "details": str(e)
+                "details": str(error)
             }
         }
         return jsonify(output), 500
