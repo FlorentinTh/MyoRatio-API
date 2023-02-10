@@ -39,7 +39,7 @@ class Results:
                 if ratio == 1:
                     ratio = int(ratio)
                 else:
-                    ratio = float(format(ratio, '.3f'))
+                    ratio = float(format(ratio, '.2f'))
 
                 values = None
 
