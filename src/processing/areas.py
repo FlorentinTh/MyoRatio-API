@@ -2,11 +2,9 @@ import pandas as pd
 
 from scipy import integrate
 
-from src.helpers import JSONHelper
-
 
 class Areas:
-    def __init__(self, data_path, csv_files):
+    def __init__(self, data_path: str, csv_files: list[str]):
         self._data_path = data_path
         self._dataframes = []
 
@@ -19,7 +17,7 @@ class Areas:
                 raise pd.errors.ParserError(error)
 
     @staticmethod
-    def _compute_area(data):
+    def _compute_area(data: pd.DataFrame) -> pd.DataFrame:
         area_all_emg_data = pd.DataFrame()
 
         for i, column in enumerate(data):
@@ -28,17 +26,19 @@ class Areas:
 
         return area_all_emg_data
 
-    def start_processing(self):
+    def start_processing(self) -> dict:
         mean_normalized_envelope_all_emg_data = pd.concat(self._dataframes).groupby(level=0).mean()
         area_mean_all_emg_data = self._compute_area(mean_normalized_envelope_all_emg_data)
 
-        output = {}
+        areas = {}
 
         for i in range(len(self._dataframes)):
             iteration_area_data = self._compute_area(self._dataframes[i])
-            output[f'iteration_{i}'] = iteration_area_data.to_dict(orient='records')[0]
+            areas[f'iteration_{i}'] = iteration_area_data.to_dict(orient='records')[0]
 
-        output['mean'] = area_mean_all_emg_data.to_dict(orient='records')[0]
-        JSONHelper.write_areas_file(self._data_path, output)
+        areas['mean'] = area_mean_all_emg_data.to_dict(orient='records')[0]
+
+        return areas
+
 
 
