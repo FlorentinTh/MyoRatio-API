@@ -374,8 +374,8 @@ def generate_report() -> tuple[Response, int]:
 
 
 def main():
-    http = WSGIServer((Configuration.HOST.value, Configuration.PORT.value), app)
     try:
+        http = WSGIServer((Configuration.HOST.value, Configuration.PORT.value), app)
         http.serve_forever()
     except KeyboardInterrupt:
         http.stop()
