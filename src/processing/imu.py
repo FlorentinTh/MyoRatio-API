@@ -3,7 +3,7 @@ import math
 import pandas as pd
 import numpy as np
 
-from .data import _Data, Column
+from .data import _Data, Column, Analysis
 from .frequencies import Frequency
 from .resample import Resample
 
@@ -12,16 +12,16 @@ from src.helpers import PlotHelper
 
 
 class IMU(_Data):
-    def __init__(self, base_path, csv_file, analysis):
+    def __init__(self, base_path: str, csv_file: str, analysis: str):
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
         self._analysis = analysis
         _Data.__init__(self, csv_file, is_imu=True)
 
-    def _get_accelerometer_raw_data(self):
-        if self._analysis == 'extension' or \
-                self._analysis == 'flexion':
+    def _get_accelerometer_raw_data(self) -> pd.DataFrame:
+        if self._analysis == Analysis.EXTENSION.value or \
+                self._analysis == Analysis.FLEXION.value:
             data_acc_raw = self._get_column_data(Column.ACCELEROMETER_TIBIALIS_ANTERIOR.value)
         else:
             data_acc_raw = self._get_column_data(Column.ACCELEROMETER_TENSOR_FASCIAE_LATAE.value)
@@ -29,7 +29,7 @@ class IMU(_Data):
         nb_imu_rows_to_keep = math.ceil(self._get_total_recording_time() * Frequency.IMU.value)
         return data_acc_raw.iloc[:nb_imu_rows_to_keep]
 
-    def _compute_angle(self, resampled_data):
+    def _compute_angle(self, resampled_data: pd.DataFrame) -> pd.DataFrame:
         accelerometer_x1 = resampled_data[:, 0]
         accelerometer_y1 = resampled_data[:, 1]
         accelerometer_z1 = resampled_data[:, 2]
@@ -57,7 +57,7 @@ class IMU(_Data):
 
         return data
 
-    def _reduce_angle_data(self, data):
+    def _reduce_angle_data(self, data: pd.DataFrame) -> None:
         data = data.reset_index(drop=False)
         data_length = len(str(len(data)))
 
@@ -70,7 +70,7 @@ class IMU(_Data):
         data = data.iloc[::int(step), :]
         JSONHelper.write_angle_file(self._base_path, self._csv_path, data, prefix='small')
 
-    def start_processing(self):
+    def start_processing(self) -> None:
         indexes = np.where(self._dataframe.iloc[:, 0].isna())[0]
 
         if len(indexes) > 0:

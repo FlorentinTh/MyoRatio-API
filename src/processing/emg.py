@@ -24,7 +24,7 @@ class NormalizationOptions(Enum):
 
 
 class EMG(_Data):
-    def __init__(self, base_path, csv_file, stage):
+    def __init__(self, base_path: str, csv_file: str, stage: str):
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
@@ -35,13 +35,13 @@ class EMG(_Data):
         self._emg_trig_time = None
         self._emg_im_data = None
 
-    def _get_emg_trig_raw_data(self):
+    def _get_emg_trig_raw_data(self) -> None:
         self._emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
         self._emg_trig_time = self._get_time_emg(self._emg_trig_data)
         self._emg_trig_data = pd.concat([self._emg_trig_time, self._emg_trig_data], axis=1)
         self._emg_trig_data.set_index(self._emg_trig_data.columns[0], inplace=True)
 
-    def _get_emg_im_raw_data(self):
+    def _get_emg_im_raw_data(self) -> None:
         self._emg_im_data = self._get_column_data(Column.EMG_IM.value)
         nb_emg_im_rows_to_keep = math.ceil(self._get_total_recording_time() * Frequency.EMG_IM.value)
         self._emg_im_data = self._emg_im_data.iloc[:nb_emg_im_rows_to_keep]
@@ -49,7 +49,7 @@ class EMG(_Data):
         self._emg_im_data = pd.concat([emg_im_time, self._emg_im_data], axis=1)
         self._emg_im_data.set_index(self._emg_im_data.columns[0], inplace=True)
 
-    def _remove_mean_all_emg_data(self, resampled_emg_im_data):
+    def _remove_mean_all_emg_data(self, resampled_emg_im_data: pd.DataFrame) -> pd.DataFrame:
         data_all_emg = pd.concat([self._emg_trig_data, resampled_emg_im_data], axis=1)
         data_mean_all_emg_removed = pd.DataFrame(np.zeros(data_all_emg.shape))
         data_mean_all_emg_removed.index = data_all_emg.index
@@ -62,7 +62,7 @@ class EMG(_Data):
 
         return data_mean_all_emg_removed
 
-    def _filter_all_emg_data(self, removed_mean_all_emg_data):
+    def _filter_all_emg_data(self, removed_mean_all_emg_data: pd.DataFrame) -> pd.DataFrame:
         order = FilterOptions.ORDER.value
         lowpass_frequency_cutoff = FilterOptions.LOWPASS_FREQUENCY_CUTOFF.value
         highpass_frequency_cutoff = FilterOptions.HIGHPASS_FREQUENCY_CUTOFF.value
@@ -78,7 +78,8 @@ class EMG(_Data):
         all_emg_filtered_data.set_index(all_emg_filtered_data.columns[0], inplace=True)
         return all_emg_filtered_data
 
-    def _extract_rms_envelope_from_all_emg_data(self, all_emg_filtered_data, window_size):
+    def _extract_rms_envelope_from_all_emg_data(self, all_emg_filtered_data: pd.DataFrame,
+                                                window_size: float) -> pd.DataFrame:
         window = signal.windows.boxcar(round(Frequency.EMG_TRIG.value * window_size))
         n_pad = len(window) - 1
         all_emg_rms_envelope_data = pd.DataFrame()
@@ -86,8 +87,8 @@ class EMG(_Data):
         for i, column in enumerate(all_emg_filtered_data):
             all_emg_power_data = np.square(all_emg_filtered_data[column].to_numpy())
             all_emg_power_padded_data = np.pad(all_emg_power_data, (n_pad // 2, n_pad - n_pad // 2),
-                                               mode="constant")
-            all_emg_power_convolution_data = np.convolve(all_emg_power_padded_data, window, mode="valid")
+                                               mode='constant')
+            all_emg_power_convolution_data = np.convolve(all_emg_power_padded_data, window, mode='valid')
             final_computed_column = np.sqrt(np.divide(all_emg_power_convolution_data, np.sum(window)))
             all_emg_rms_envelope_data[all_emg_filtered_data[column].name] = pd.Series(final_computed_column)
 
@@ -95,13 +96,13 @@ class EMG(_Data):
         return all_emg_rms_envelope_data
 
     @staticmethod
-    def _get_point_index(data, point_x, point_y):
+    def _get_point_index(data: pd.DataFrame, point_x: float, point_y: float) -> dict:
         return {
-            "x": data.index[data['X[s]'] == point_x].tolist()[0],
-            "y": data.index[data['X[s]'] == point_y].tolist()[0]
+            'x': data.index[data['X[s]'] == point_x].tolist()[0],
+            'y': data.index[data['X[s]'] == point_y].tolist()[0]
         }
 
-    def start_processing(self, window_size, point_1x, point_2x):
+    def start_processing(self, window_size: float, point_1x: float, point_2x: float) -> None:
         self._get_emg_trig_raw_data()
         self._get_emg_im_raw_data()
 

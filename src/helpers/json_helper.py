@@ -1,12 +1,14 @@
 import os
 import json
 
+import pandas as pd
+
 from .file_helper import FileHelper
 
 
 class JSONHelper:
     @staticmethod
-    def write_angle_file(base_path, csv_path, data, prefix=None):
+    def write_angle_file(base_path: str, csv_path: tuple, data: pd.DataFrame, prefix: str = None) -> None:
         data.rename(columns={f'{data.columns[0]}': 'x'}, inplace=True)
 
         if prefix is None:
@@ -19,7 +21,12 @@ class JSONHelper:
         data.to_json(json_file_output_path, orient='records')
 
     @staticmethod
-    def write_areas_file(data_path, data):
-        path = os.path.join(data_path, 'areas.json')
+    def write_ratio_file(data_path: str, stage: str, data: dict, suffix: str = None) -> None:
+
+        if suffix is None:
+            path = os.path.join(data_path, f'ratios_{stage}_mean.json')
+        else:
+            path = os.path.join(data_path, f'ratios_{stage}_{suffix}.json')
+
         with open(path, "w") as write_file:
             json.dump(data, write_file)
