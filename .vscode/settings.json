@@ -1,0 +1,16 @@
+{
+    "files.autoSave": "off",
+    "files.encoding": "utf8",
+    "search.exclude": {
+      "**/venv": true,
+    },
+    "[python]": {
+      "editor.defaultFormatter": "ms-python.black-formatter",
+      "editor.formatOnSave": true,
+      "editor.formatOnPaste": true,
+      "editor.codeActionsOnSave": {
+        "source.organizeImports": true
+      }
+    },
+    "isort.args":["--profile", "black"],
+}
