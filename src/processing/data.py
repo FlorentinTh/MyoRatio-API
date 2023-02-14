@@ -1,9 +1,8 @@
 import os
-
-import pandas as pd
-import dask.dataframe as dd
-
 from enum import Enum
+
+import dask.dataframe as dd
+import pandas as pd
 
 
 class Column(Enum):
@@ -14,8 +13,8 @@ class Column(Enum):
 
 
 class Analysis(Enum):
-    EXTENSION = 'extension'
-    FLEXION = 'flexion'
+    EXTENSION = "extension"
+    FLEXION = "flexion"
 
 
 class _Data:
@@ -26,25 +25,31 @@ class _Data:
             if is_imu is True:
                 self._dataframe = dd.read_csv(self._csv_file).compute()
             else:
-                self._dataframe = pd.read_csv(self._csv_file, engine='c', encoding='utf-8')
+                self._dataframe = pd.read_csv(
+                    self._csv_file, engine="c", encoding="utf-8"
+                )
         except pd.errors.ParserError as error:
             raise pd.errors.ParserError(error)
 
     def _get_column_data(self, column: int) -> pd.DataFrame:
         if column == 0:
-            return self._dataframe.filter(regex=r'^(?=.*EMG)(?!.*\(IM\)).*')
+            return self._dataframe.filter(regex=r"^(?=.*EMG)(?!.*\(IM\)).*")
         elif column == 1:
-            return self._dataframe.filter(regex=r'^(?=.*EMG)(?=.*\(IM\)).*')
+            return self._dataframe.filter(regex=r"^(?=.*EMG)(?=.*\(IM\)).*")
         elif column == 2:
-            return self._dataframe.filter(regex=r'^(?=.*TIBIALIS ANTERIOR)(?=.*ACC).*')
+            return self._dataframe.filter(regex=r"^(?=.*TIBIALIS ANTERIOR)(?=.*ACC).*")
         else:
-            return self._dataframe.filter(regex=r'^(?=.*TENSOR FASCIAE LATAE)(?=.*ACC).*')
+            return self._dataframe.filter(regex=r"^(?=.*TENSOR FASCIAE LATAE)(?=.*ACC).*")
 
     def _get_time_emg(self, data: pd.DataFrame, skip: int = None) -> pd.DataFrame:
         if skip is None:
-            return self._dataframe.iloc[:, self._dataframe.columns.get_loc(data.columns[0]) - 1]
+            return self._dataframe.iloc[
+                :, self._dataframe.columns.get_loc(data.columns[0]) - 1
+            ]
         else:
-            return self._dataframe.iloc[:skip, self._dataframe.columns.get_loc(data.columns[0]) - 1]
+            return self._dataframe.iloc[
+                :skip, self._dataframe.columns.get_loc(data.columns[0]) - 1
+            ]
 
     def _get_total_recording_time(self) -> pd.DataFrame:
         emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)

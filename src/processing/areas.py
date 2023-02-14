@@ -1,5 +1,4 @@
 import pandas as pd
-
 from scipy import integrate
 
 
@@ -10,7 +9,7 @@ class Areas:
 
         for csv_file in csv_files:
             try:
-                dataframe = pd.read_csv(csv_file, sep='\t', encoding='utf-8', engine='c')
+                dataframe = pd.read_csv(csv_file, sep="\t", encoding="utf-8", engine="c")
                 dataframe.set_index(dataframe.columns[0], inplace=True)
                 self._dataframes.append(dataframe)
             except pd.errors.ParserError as error:
@@ -27,18 +26,17 @@ class Areas:
         return area_all_emg_data
 
     def start_processing(self) -> dict:
-        mean_normalized_envelope_all_emg_data = pd.concat(self._dataframes).groupby(level=0).mean()
+        mean_normalized_envelope_all_emg_data = (
+            pd.concat(self._dataframes).groupby(level=0).mean()
+        )
         area_mean_all_emg_data = self._compute_area(mean_normalized_envelope_all_emg_data)
 
         areas = {}
 
         for i in range(len(self._dataframes)):
             iteration_area_data = self._compute_area(self._dataframes[i])
-            areas[f'iteration_{i}'] = iteration_area_data.to_dict(orient='records')[0]
+            areas[f"iteration_{i}"] = iteration_area_data.to_dict(orient="records")[0]
 
-        areas['mean'] = area_mean_all_emg_data.to_dict(orient='records')[0]
+        areas["mean"] = area_mean_all_emg_data.to_dict(orient="records")[0]
 
         return areas
-
-
-
