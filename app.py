@@ -17,7 +17,7 @@ from simple_schema_validator import schema_validator
 
 from configuration import Configuration
 from src.helpers import JSONHelper, PDFHelper
-from src.processing import EMG, IMU, Areas, Results
+from src.processing import EMG, IMU, Areas, Points, Results
 from src.utils import APIKey
 
 app = Flask(__name__)
@@ -300,6 +300,65 @@ def generate_emg_analysis() -> tuple[Response, int]:
             },
         }
         return jsonify(output), 201
+
+
+@app.route("/points/", methods=["POST"])
+@auth.login_required
+def get_points_automatically() -> tuple[Response, int]:
+    body = request.json
+
+    if body is None:
+        output = {
+            "code": 400,
+            "status": "failed",
+            "payload": {
+                "message": f"Request body is not properly formatted",
+                "details": "request body is empty",
+            },
+        }
+
+        return jsonify(output), 400
+
+    else:
+        schema = {
+            "data_path": str,
+            "analysis": str,
+            "stage": str,
+            "participant": str,
+            "iteration": int,
+        }
+
+        validation = validate_request_body(body, schema)
+
+        if validation is not None:
+            return jsonify(validation), 400
+
+        data_path = os.path.join(
+            os.path.normpath(body["data_path"]),
+            "analysis",
+            ".metadata",
+            body["analysis"],
+            body["participant"],
+        )
+
+        json_files = glob(os.path.join(data_path, "small_*.json"))
+        points = Points(body["stage"], json_files[body["iteration"]])
+        points = points.get_points()
+
+        output = {
+            "code": 200,
+            "status": "ok",
+            "payload": {
+                "data_path": body["data_path"],
+                "analysis": body["analysis"],
+                "stage": body["stage"],
+                "iteration": body["iteration"],
+                "participant": body["participant"],
+                "points": points,
+            },
+        }
+
+        return jsonify(output), 200
 
 
 @delayed
