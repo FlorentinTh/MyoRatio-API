@@ -36,7 +36,7 @@ class IMU(_Data):
         )
         return data_acc_raw.iloc[:nb_imu_rows_to_keep]
 
-    def _compute_angle(self, resampled_data: pd.DataFrame) -> pd.DataFrame:
+    def _compute_angle(self, resampled_data: np.ndarray) -> pd.DataFrame:
         accelerometer_x1 = resampled_data[:, 0]
         accelerometer_y1 = resampled_data[:, 1]
         accelerometer_z1 = resampled_data[:, 2]

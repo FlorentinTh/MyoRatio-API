@@ -1,3 +1,5 @@
+from typing import Optional
+
 from .data import Analysis
 
 
@@ -6,7 +8,7 @@ class Results:
         self._areas = areas
         self._analysis = analysis
 
-    def get_ratios(self, iteration: int = None) -> dict:
+    def get_ratios(self, iteration: Optional[int] = None) -> dict:
 
         if iteration is None:
             area = self._areas["mean"]
@@ -46,6 +48,6 @@ class Results:
                 else:
                     values = exists["values"]
 
-                values[j] = ratio
+                values[j] = ratio  # type: ignore
 
         return ratios

@@ -1,5 +1,6 @@
 import json
 import os
+from typing import Optional
 
 import pandas as pd
 
@@ -9,7 +10,7 @@ from .file_helper import FileHelper
 class JSONHelper:
     @staticmethod
     def write_angle_file(
-        base_path: str, csv_path: tuple, data: pd.DataFrame, prefix: str = None
+        base_path: str, csv_path: tuple, data: pd.DataFrame, prefix: Optional[str] = None
     ) -> None:
         data.rename(columns={f"{data.columns[0]}": "x"}, inplace=True)
 
@@ -30,7 +31,7 @@ class JSONHelper:
 
     @staticmethod
     def write_ratio_file(
-        data_path: str, stage: str, data: dict, suffix: str = None
+        data_path: str, stage: str, data: dict, suffix: Optional[str] = None
     ) -> None:
 
         if suffix is None:

@@ -1,5 +1,6 @@
 import math
 from enum import Enum
+from typing import Optional
 
 import numpy as np
 import pandas as pd
@@ -55,19 +56,23 @@ class EMG(_Data):
     def _remove_mean_all_emg_data(
         self, resampled_emg_im_data: pd.DataFrame
     ) -> pd.DataFrame:
-        data_all_emg = pd.concat([self._emg_trig_data, resampled_emg_im_data], axis=1)
-        data_mean_all_emg_removed = pd.DataFrame(np.zeros(data_all_emg.shape))
-        data_mean_all_emg_removed.index = data_all_emg.index
-        data_mean_all_emg_removed.columns = data_all_emg.columns
 
-        for i, column in enumerate(data_all_emg):
-            mean = data_all_emg[column].mean()
-            computed_column = data_all_emg[column].apply(lambda value: (value - mean))
-            data_mean_all_emg_removed[
-                data_mean_all_emg_removed[column].name
-            ] = computed_column
+        if self._emg_trig_data is not None:
+            data_all_emg = pd.concat([self._emg_trig_data, resampled_emg_im_data], axis=1)
+            data_mean_all_emg_removed = pd.DataFrame(np.zeros(data_all_emg.shape))
+            data_mean_all_emg_removed.index = data_all_emg.index
+            data_mean_all_emg_removed.columns = data_all_emg.columns
 
-        return data_mean_all_emg_removed
+            for i, column in enumerate(data_all_emg):
+                mean = data_all_emg[column].mean()
+                computed_column = data_all_emg[column].apply(lambda value: (value - mean))
+                data_mean_all_emg_removed[
+                    data_mean_all_emg_removed[column].name
+                ] = computed_column
+
+            return data_mean_all_emg_removed
+        else:
+            raise ValueError(f"class EMG object was not properly initialized")
 
     def _filter_all_emg_data(
         self, removed_mean_all_emg_data: pd.DataFrame
@@ -92,9 +97,13 @@ class EMG(_Data):
                 filtered
             )
 
-        all_emg_filtered_data = pd.concat(
-            [self._emg_trig_time, all_emg_filtered_data], axis=1
-        )
+        if self._emg_trig_time is not None:
+            all_emg_filtered_data = pd.concat(
+                [self._emg_trig_time, all_emg_filtered_data], axis=1
+            )
+        else:
+            raise ValueError(f"class EMG object was not properly initialized")
+
         all_emg_filtered_data.set_index(all_emg_filtered_data.columns[0], inplace=True)
         return all_emg_filtered_data
 
@@ -120,9 +129,13 @@ class EMG(_Data):
                 final_computed_column
             )
 
-        all_emg_rms_envelope_data = pd.concat(
-            [self._emg_trig_time, all_emg_rms_envelope_data], axis=1
-        ).dropna()
+        if self._emg_trig_time is not None:
+            all_emg_rms_envelope_data = pd.concat(
+                [self._emg_trig_time, all_emg_rms_envelope_data], axis=1
+            ).dropna()
+        else:
+            raise ValueError(f"class EMG object was not properly initialized")
+
         return all_emg_rms_envelope_data
 
     @staticmethod
@@ -138,37 +151,54 @@ class EMG(_Data):
         self._get_emg_trig_raw_data()
         self._get_emg_im_raw_data()
 
-        resampled_emg_im_data = Resample(
-            self._emg_im_data, Frequency.EMG_TRIG.value, Frequency.EMG_IM.value
-        ).get_data()
+        if self._emg_im_data is not None:
+            resampled_emg_im_data = Resample(
+                self._emg_im_data, Frequency.EMG_TRIG.value, Frequency.EMG_IM.value
+            ).get_data()
+        else:
+            raise ValueError(f"class EMG object was not properly initialized")
+
         resampled_emg_im_data = pd.DataFrame(
             resampled_emg_im_data, columns=self._emg_im_data.columns
         )
-        resampled_emg_im_data = pd.concat(
-            [self._emg_trig_time, resampled_emg_im_data], axis=1
-        ).dropna()
+
+        if self._emg_trig_time is not None:
+            resampled_emg_im_data = pd.concat(
+                [self._emg_trig_time, resampled_emg_im_data], axis=1
+            ).dropna()
+        else:
+            raise ValueError(f"class EMG object was not properly initialized")
+
         resampled_emg_im_data.set_index(resampled_emg_im_data.columns[0], inplace=True)
 
         removed_mean_all_emg_data = self._remove_mean_all_emg_data(resampled_emg_im_data)
+
         all_emg_filtered_data = self._filter_all_emg_data(removed_mean_all_emg_data)
+
         all_emg_rms_envelope_data = self._extract_rms_envelope_from_all_emg_data(
             all_emg_filtered_data, window_size
         )
+
         points = self._get_point_index(all_emg_rms_envelope_data, point_1x, point_2x)
+
         all_emg_between_points_data = all_emg_rms_envelope_data.iloc[
             points["x"] : points["y"], :
         ]
 
         normalized_envelope_all_emg_data = Resample(
-            all_emg_between_points_data, fixed_value=NormalizationOptions.LENGTH.value
+            all_emg_between_points_data,
+            fixed_value=NormalizationOptions.LENGTH.value,
         ).get_data()
+
         normalized_envelope_all_emg_data = pd.DataFrame(
             normalized_envelope_all_emg_data,
             columns=all_emg_between_points_data.columns,
         )
+
         normalized_envelope_all_emg_data.set_index(
             normalized_envelope_all_emg_data.columns[0], inplace=True
         )
+
         CSVHelper.write_normalized_envelope(
             self._base_path,
             self._csv_path,

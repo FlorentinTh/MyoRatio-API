@@ -4,9 +4,11 @@ monkey.patch_all()
 
 import os
 from glob import glob
+from typing import Optional
 
 import bcrypt
-from dask import compute, delayed
+from dask.base import compute
+from dask.delayed import delayed
 from flask import Flask, Response, jsonify, request
 from flask_httpauth import HTTPTokenAuth
 from gevent.pywsgi import WSGIServer
@@ -24,8 +26,10 @@ auth = HTTPTokenAuth(header="X-API-Key")
 api_key_hashed = APIKey.hash_key(Configuration.API_KEY.value)
 
 
-def validate_request_body(body: dict, schema: dict) -> dict or bool:
+def validate_request_body(body: dict, schema: dict) -> Optional[str]:
     validation = schema_validator(schema, body)
+
+    details = None
 
     if validation is not None:
         if not validation:
@@ -35,28 +39,17 @@ def validate_request_body(body: dict, schema: dict) -> dict or bool:
                 details = "data contain less keys than expected"
             elif len(validation.type_errors) > 0:
                 details = "data contain keys which don't match expected type"
-            else:
-                details = None
 
-            return {
-                "code": 400,
-                "status": "failed",
-                "payload": {
-                    "message": f"Request body is not properly formatted",
-                    "details": details,
-                },
-            }
-        else:
-            return True
+    return details
 
 
 @auth.verify_token
-def verify_apikey(key) -> bool:
+def verify_api_key(key) -> bool:
     return bcrypt.checkpw(key.encode("utf-8"), api_key_hashed)
 
 
 @delayed
-def parallel_imu_processing(body: dict, participant: str) -> dict:
+def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
     data_path_parameter = os.path.normpath(body["data_path"])
     data_path = os.path.join(
         data_path_parameter, "analysis", body["analysis"], participant
@@ -122,41 +115,64 @@ def parallel_imu_processing(body: dict, participant: str) -> dict:
 def generate_imu_analysis() -> tuple[Response, int]:
     body = request.json
 
-    schema = {
-        "data_path": str,
-        "analysis": str,
-        "participants": [str],
-    }
+    if body is None:
+        output = {
+            "code": 400,
+            "status": "failed",
+            "payload": {
+                "message": f"Request body is not properly formatted",
+                "details": "request body is empty",
+            },
+        }
 
-    validation = validate_request_body(body, schema)
+        return jsonify(output), 400
 
-    if validation is not True:
-        return jsonify(validation), 400
+    else:
+        schema = {
+            "data_path": str,
+            "analysis": str,
+            "participants": [str],
+        }
 
-    participants = []
+        validation = validate_request_body(body, schema)
 
-    for participant in body["participants"]:
-        # deepcode ignore XSS: body already validated
-        participants.append(parallel_imu_processing(body, participant))
+        if validation is not None:
+            output = {
+                "code": 400,
+                "status": "failed",
+                "payload": {
+                    "message": f"Request body is not properly formatted",
+                    "details": validation,
+                },
+            }
 
-    outputs = compute(participants)
+            return jsonify(output), 400
 
-    for i in range(len(outputs[0])):
-        output = outputs[0][i]
+        participants = []
 
-        if output is not None:
-            return jsonify(output), output["code"]
+        for participant in body["participants"]:
+            # deepcode ignore XSS: already sanitized
+            participants.append(parallel_imu_processing(body, participant))
 
-    output = {
-        "code": 201,
-        "status": "created",
-        "payload": {
-            "data_path": body["data_path"],
-            "analysis": body["analysis"],
-            "participants": body["participants"],
-        },
-    }
-    return jsonify(output), 201
+        outputs = compute(participants)
+
+        for i in range(len(outputs[0])):
+            output = outputs[0][i]
+
+            if output is not None:
+                return jsonify(output), output["code"]
+
+        output = {
+            "code": 201,
+            "status": "created",
+            "payload": {
+                "data_path": body["data_path"],
+                "analysis": body["analysis"],
+                "participants": body["participants"],
+            },
+        }
+
+        return jsonify(output), 201
 
 
 @app.route("/emg/", methods=["POST"])
@@ -164,91 +180,121 @@ def generate_imu_analysis() -> tuple[Response, int]:
 def generate_emg_analysis() -> tuple[Response, int]:
     body = request.json
 
-    schema = {
-        "window_size": float,
-        "data_path": str,
-        "analysis": str,
-        "stage": str,
-        "participant": str,
-        "iteration": int,
-        "point_1x": float,
-        "point_2x": float,
-    }
+    if body is None:
+        output = {
+            "code": 400,
+            "status": "failed",
+            "payload": {
+                "message": f"Request body is not properly formatted",
+                "details": "request body is empty",
+            },
+        }
 
-    validation = validate_request_body(body, schema)
+        return jsonify(output), 400
 
-    if validation is not True:
-        return jsonify(validation), 400
+    else:
+        schema = {
+            "window_size": float,
+            "data_path": str,
+            "analysis": str,
+            "stage": str,
+            "participant": str,
+            "iteration": int,
+            "point_1x": float,
+            "point_2x": float,
+        }
 
-    data_path = os.path.join(
-        os.path.normpath(body["data_path"]),
-        "analysis",
-        body["analysis"],
-        body["participant"],
-    )
+        validation = validate_request_body(body, schema)
 
-    csv_files = glob(os.path.join(data_path, "*.csv"))
+        if validation is not None:
+            return jsonify(validation), 400
 
-    if len(csv_files) > 0:
-        try:
-            csv_file = csv_files[body["iteration"]]
-        except IndexError as error:
+        data_path = os.path.join(
+            os.path.normpath(body["data_path"]),
+            "analysis",
+            body["analysis"],
+            body["participant"],
+        )
+
+        csv_files = glob(os.path.join(data_path, "*.csv"))
+
+        if len(csv_files) > 0:
+            try:
+                csv_file = csv_files[body["iteration"]]
+            except IndexError as error:
+                output = {
+                    "code": 404,
+                    "status": "failed",
+                    "payload": {
+                        "message": f'cannot find a CSV file for iteration {body["iteration"]}',
+                        "details": str(error),
+                    },
+                }
+                return jsonify(output), 500
+
+            emg = None
+
+            try:
+                emg = EMG(body["data_path"], csv_file, body["stage"])
+            except pd_errors.ParserError as error:
+                if emg is not None:
+                    message = (
+                        f"Error occurs while trying to read: {emg.get_csv_path()[1]}"
+                    )
+                else:
+                    message = "Error occurs while trying to read CSV files"
+
+                output = {
+                    "code": 500,
+                    "status": "failed",
+                    "payload": {"message": message, "details": str(error)},
+                }
+
+                return jsonify(output), 500
+
+            try:
+                emg.start_processing(
+                    body["window_size"], body["point_1x"], body["point_2x"]
+                )
+            except Exception as error:
+                output = {
+                    "code": 500,
+                    "status": "failed",
+                    "payload": {
+                        "message": "Error occurs while trying to process EMG data",
+                        "details": str(error),
+                    },
+                }
+
+                return jsonify(output), 500
+
+        else:
             output = {
                 "code": 404,
                 "status": "failed",
                 "payload": {
-                    "message": f'cannot find a CSV file for iteration {body["iteration"]}',
-                    "details": str(error),
+                    "message": "Missing data",
+                    "details": f"No CSV file founded in path: {data_path}",
                 },
             }
-            return jsonify(output), 500
+            return jsonify(output), 404
 
-        emg = None
-
-        try:
-            emg = EMG(body["data_path"], csv_file, body["stage"])
-        except pd_errors.ParserError as error:
-            if emg is not None:
-                message = f"Error occurs while trying to read: {emg.get_csv_path()[1]}"
-            else:
-                message = "Error occurs while trying to read CSV files"
-
-            output = {
-                "code": 500,
-                "status": "failed",
-                "payload": {"message": message, "details": str(error)},
-            }
-
-            return jsonify(output), 500
-
-        emg.start_processing(body["window_size"], body["point_1x"], body["point_2x"])
-    else:
         output = {
-            "code": 404,
-            "status": "failed",
+            "code": 201,
+            "status": "created",
             "payload": {
-                "message": "Missing data",
-                "details": f"No CSV file founded in path: {data_path}",
+                "data_path": body["data_path"],
+                "analysis": body["analysis"],
+                "stage": body["stage"],
+                "iteration": body["iteration"],
+                "participant": body["participant"],
             },
         }
-        return jsonify(output), 404
-
-    output = {
-        "code": 201,
-        "status": "created",
-        "payload": {
-            "data_path": body["data_path"],
-            "analysis": body["analysis"],
-            "stage": body["stage"],
-            "iteration": body["iteration"],
-            "participant": body["participant"],
-        },
-    }
-    return jsonify(output), 201
+        return jsonify(output), 201
 
 
 @delayed
-def parallel_results_processing(body: dict, participant: str) -> dict:
+def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
     data_path = os.path.join(
         os.path.normpath(body["data_path"]),
         "analysis",
@@ -301,39 +347,53 @@ def parallel_results_processing(body: dict, participant: str) -> dict:
 def generate_results() -> tuple[Response, int]:
     body = request.json
 
-    schema = {"data_path": str, "analysis": str, "stage": str, "participants": [str]}
+    if body is None:
+        output = {
+            "code": 400,
+            "status": "failed",
+            "payload": {
+                "message": f"Request body is not properly formatted",
+                "details": "request body is empty",
+            },
+        }
 
-    validation = validate_request_body(body, schema)
+        return jsonify(output), 400
 
-    if validation is not True:
-        return jsonify(validation), 400
+    else:
+        schema = {"data_path": str, "analysis": str, "stage": str, "participants": [str]}
 
-    participants = []
+        validation = validate_request_body(body, schema)
 
-    for participant in body["participants"]:
-        # deepcode ignore XSS: body already validated
-        participants.append(parallel_results_processing(body, participant))
+        if validation is not None:
+            return jsonify(validation), 400
 
-    outputs = compute(participants)
+        participants = []
 
-    for i in range(len(outputs[0])):
-        output = outputs[0][i]
+        for participant in body["participants"]:
+            # deepcode ignore XSS: already sanitized
+            participants.append(parallel_results_processing(body, participant))
 
-        if output is not None:
-            # deepcode ignore XSS: output does not required to be sanitized
-            return jsonify(output), output["code"]
+        outputs = compute(participants)
 
-    output = {
-        "code": 201,
-        "status": "created",
-        "payload": {
-            "data_path": body["data_path"],
-            "analysis": body["analysis"],
-            "stage": body["stage"],
-            "participants": body["participants"],
-        },
-    }
-    return jsonify(output), 201
+        for i in range(len(outputs[0])):
+            output = outputs[0][i]
+
+            if output is not None:
+                # deepcode ignore XSS: already sanitized
+                return jsonify(output), output["code"]
+
+        output = {
+            "code": 201,
+            "status": "created",
+            "payload": {
+                "data_path": body["data_path"],
+                "analysis": body["analysis"],
+                "stage": body["stage"],
+                "participants": body["participants"],
+            },
+        }
+
+        return jsonify(output), 201
 
 
 @app.route("/report/", methods=["POST"])
@@ -341,42 +401,57 @@ def generate_results() -> tuple[Response, int]:
 def generate_report() -> tuple[Response, int]:
     body = request.json
 
-    schema = {"data_path": str, "analysis": str}
-
-    validation = validate_request_body(body, schema)
-
-    if validation is not True:
-        return jsonify(validation), 400
-
-    base_path = os.path.join(
-        os.path.normpath(body["data_path"]), "analysis", ".metadata", body["analysis"]
-    )
-    html_path = os.path.join(base_path, f'{body["analysis"]}_report.html')
-    output_path = os.path.join(
-        os.path.normpath(body["data_path"]),
-        "analysis",
-        f'{body["analysis"]}_report.pdf',
-    )
-
-    try:
-        PDFHelper.generate_pdf_from_html(html_path, output_path)
-    except Exception as error:
+    if body is None:
         output = {
-            "code": 500,
+            "code": 400,
             "status": "failed",
             "payload": {
-                "message": f"Error occurs while trying to generate PDF report",
-                "details": str(error),
+                "message": f"Request body is not properly formatted",
+                "details": "request body is empty",
             },
         }
-        return jsonify(output), 500
 
-    output = {
-        "code": 201,
-        "status": "created",
-        "payload": {"data_path": body["data_path"], "analysis": body["analysis"]},
-    }
-    return jsonify(output), 201
+        return jsonify(output), 400
+
+    else:
+        schema = {"data_path": str, "analysis": str}
+
+        validation = validate_request_body(body, schema)
+
+        if validation is not None:
+            return jsonify(validation), 400
+
+        base_path = os.path.join(
+            os.path.normpath(body["data_path"]), "analysis", ".metadata", body["analysis"]
+        )
+        html_path = os.path.join(base_path, f'{body["analysis"]}_report.html')
+        output_path = os.path.join(
+            os.path.normpath(body["data_path"]),
+            "analysis",
+            f'{body["analysis"]}_report.pdf',
+        )
+
+        try:
+            PDFHelper.generate_pdf_from_html(html_path, output_path)
+        except Exception as error:
+            output = {
+                "code": 500,
+                "status": "failed",
+                "payload": {
+                    "message": f"Error occurs while trying to generate PDF report",
+                    "details": str(error),
+                },
+            }
+
+            return jsonify(output), 500
+
+        output = {
+            "code": 201,
+            "status": "created",
+            "payload": {"data_path": body["data_path"], "analysis": body["analysis"]},
+        }
+
+        return jsonify(output), 201
 
 
 def main():

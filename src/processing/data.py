@@ -1,7 +1,8 @@
 import os
 from enum import Enum
+from typing import Optional
 
-import dask.dataframe as dd
+import dask.dataframe.io.csv as dd
 import pandas as pd
 
 
@@ -41,7 +42,7 @@ class _Data:
         else:
             return self._dataframe.filter(regex=r"^(?=.*TENSOR FASCIAE LATAE)(?=.*ACC).*")
 
-    def _get_time_emg(self, data: pd.DataFrame, skip: int = None) -> pd.DataFrame:
+    def _get_time_emg(self, data: pd.DataFrame, skip: Optional[int] = None) -> pd.Series:
         if skip is None:
             return self._dataframe.iloc[
                 :, self._dataframe.columns.get_loc(data.columns[0]) - 1
@@ -51,7 +52,7 @@ class _Data:
                 :skip, self._dataframe.columns.get_loc(data.columns[0]) - 1
             ]
 
-    def _get_total_recording_time(self) -> pd.DataFrame:
+    def _get_total_recording_time(self) -> float:
         emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
         emg_trig_time = self._get_time_emg(emg_trig_data)
         return emg_trig_time.dropna().iloc[-1:].tolist()[0]
