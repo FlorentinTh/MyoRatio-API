@@ -12,5 +12,6 @@
         "source.organizeImports": true
       }
     },
-    "isort.args":["--profile", "black"],
+    "isort.args": ["--profile", "black"],
+    "snyk.advanced.additionalParameters": "--skip-unresolved",
 }

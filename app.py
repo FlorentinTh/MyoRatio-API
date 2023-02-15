@@ -27,26 +27,27 @@ api_key_hashed = APIKey.hash_key(Configuration.API_KEY.value)
 def validate_request_body(body: dict, schema: dict) -> dict or bool:
     validation = schema_validator(schema, body)
 
-    if not validation:
-        if len(validation.additional_keys) > 0:
-            details = "data contain more keys than expected"
-        elif len(validation.missing_keys) > 0:
-            details = "data contain less keys than expected"
-        elif len(validation.type_errors) > 0:
-            details = "data contain keys which don't match expected type"
-        else:
-            details = None
+    if validation is not None:
+        if not validation:
+            if len(validation.additional_keys) > 0:
+                details = "data contain more keys than expected"
+            elif len(validation.missing_keys) > 0:
+                details = "data contain less keys than expected"
+            elif len(validation.type_errors) > 0:
+                details = "data contain keys which don't match expected type"
+            else:
+                details = None
 
-        return {
-            "code": 400,
-            "status": "failed",
-            "payload": {
-                "message": f"Request body is not properly formatted",
-                "details": details,
-            },
-        }
-    else:
-        return True
+            return {
+                "code": 400,
+                "status": "failed",
+                "payload": {
+                    "message": f"Request body is not properly formatted",
+                    "details": details,
+                },
+            }
+        else:
+            return True
 
 
 @auth.verify_token
@@ -135,6 +136,7 @@ def generate_imu_analysis() -> tuple[Response, int]:
     participants = []
 
     for participant in body["participants"]:
+        # deepcode ignore XSS: body already validated
         participants.append(parallel_imu_processing(body, participant))
 
     outputs = compute(participants)
@@ -184,6 +186,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
         body["analysis"],
         body["participant"],
     )
+
     csv_files = glob(os.path.join(data_path, "*.csv"))
 
     if len(csv_files) > 0:
@@ -215,6 +218,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
                 "status": "failed",
                 "payload": {"message": message, "details": str(error)},
             }
+
             return jsonify(output), 500
 
         emg.start_processing(body["window_size"], body["point_1x"], body["point_2x"])
@@ -307,6 +311,7 @@ def generate_results() -> tuple[Response, int]:
     participants = []
 
     for participant in body["participants"]:
+        # deepcode ignore XSS: body already validated
         participants.append(parallel_results_processing(body, participant))
 
     outputs = compute(participants)
@@ -315,6 +320,7 @@ def generate_results() -> tuple[Response, int]:
         output = outputs[0][i]
 
         if output is not None:
+            # deepcode ignore XSS: output does not required to be sanitized
             return jsonify(output), output["code"]
 
     output = {
