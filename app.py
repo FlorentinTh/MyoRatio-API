@@ -207,7 +207,16 @@ def generate_emg_analysis() -> tuple[Response, int]:
         validation = validate_request_body(body, schema)
 
         if validation is not None:
-            return jsonify(validation), 400
+            output = {
+                "code": 400,
+                "status": "failed",
+                "payload": {
+                    "message": f"Request body is not properly formatted",
+                    "details": validation,
+                },
+            }
+
+            return jsonify(output), 400
 
         data_path = os.path.join(
             os.path.normpath(body["data_path"]),
@@ -365,7 +374,16 @@ def generate_results() -> tuple[Response, int]:
         validation = validate_request_body(body, schema)
 
         if validation is not None:
-            return jsonify(validation), 400
+            output = {
+                "code": 400,
+                "status": "failed",
+                "payload": {
+                    "message": f"Request body is not properly formatted",
+                    "details": validation,
+                },
+            }
+
+            return jsonify(output), 400
 
         participants = []
 
@@ -419,7 +437,16 @@ def generate_report() -> tuple[Response, int]:
         validation = validate_request_body(body, schema)
 
         if validation is not None:
-            return jsonify(validation), 400
+            output = {
+                "code": 400,
+                "status": "failed",
+                "payload": {
+                    "message": f"Request body is not properly formatted",
+                    "details": validation,
+                },
+            }
+
+            return jsonify(output), 400
 
         base_path = os.path.join(
             os.path.normpath(body["data_path"]), "analysis", ".metadata", body["analysis"]
