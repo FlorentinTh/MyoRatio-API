@@ -89,14 +89,14 @@ def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
 
                 try:
                     imu.start_processing()
-                except Exception as e:
+                except Exception as error:
                     return {
                         "code": 500,
                         "status": "failed",
                         "payload": {
                             "message": f"Error occurs while trying to process IMU data. Related file: "
                             f"{imu.get_csv_path()[1]}",
-                            "details": str(e),
+                            "details": str(error),
                         },
                     }
     else:
@@ -343,7 +343,20 @@ def get_points_automatically() -> tuple[Response, int]:
 
         json_files = glob(os.path.join(data_path, "small_*.json"))
         points = Points(body["stage"], json_files[body["iteration"]])
-        points = points.get_points()
+
+        try:
+            points = points.get_points()
+        except Exception as error:
+            output = {
+                "code": 500,
+                "status": "failed",
+                "payload": {
+                    "message": "Error occurs while trying to retrieve points automatically",
+                    "details": str(error),
+                },
+            }
+
+            return jsonify(output), 500
 
         output = {
             "code": 200,
@@ -387,8 +400,22 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
 
         try:
             areas = areas.start_processing()
-            ratios = Results(areas, body["analysis"])
-            JSONHelper.write_ratio_file(data_path, body["stage"], ratios.get_ratios())
+            results = Results(areas, body["analysis"])
+
+            try:
+                ratios = results.get_ratios()
+            except Exception as error:
+                return {
+                    "code": 500,
+                    "status": "failed",
+                    "payload": {
+                        "message": f"Error occurs while trying to compute ratios",
+                        "details": str(error),
+                    },
+                }
+
+            JSONHelper.write_ratio_file(data_path, body["stage"], ratios)
+
         except Exception as error:
             return {
                 "code": 500,
