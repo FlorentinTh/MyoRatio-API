@@ -1,17 +1,32 @@
 {
-    "files.autoSave": "off",
-    "files.encoding": "utf8",
-    "search.exclude": {
-      "**/venv": true,
-    },
-    "[python]": {
-      "editor.defaultFormatter": "ms-python.black-formatter",
-      "editor.formatOnSave": true,
-      "editor.formatOnPaste": true,
-      "editor.codeActionsOnSave": {
-        "source.organizeImports": true
-      }
-    },
-    "isort.args": ["--profile", "black"],
-    "snyk.advanced.additionalParameters": "--skip-unresolved",
+  "files.autoSave": "off",
+  "files.encoding": "utf8",
+  "search.exclude": {
+    "**/venv": true,
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true,
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": true
+    }
+  },
+  "python.analysis.typeCheckingMode": "basic",
+  "isort.args": [
+    "--profile",
+    "black"
+  ],
+  "snyk.advanced.additionalParameters": "--skip-unresolved",
+  "[json]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.formatOnSave": true,
+    "editor.formatOnPaste": true
+  },
+  "cSpell.enabled": false
 }
