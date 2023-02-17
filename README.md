@@ -61,7 +61,7 @@ $ source ./venv/bin/activate
             --console \
             --clean \
             --name EMGTrignoAPI \
-            --icon='src/assets/icons/win/app.ico' \
+            --icon='assets/icons/win/app.ico' \
             app.py --noconfirm
 ```
 
@@ -73,7 +73,7 @@ $ source ./venv/bin/activate
             --console \
             --clean \
             --name EMGTrignoAPI \
-            --icon='src/assets/icons/mac/app.icns' \
+            --icon='assets/icons/mac/app.icns' \
             app.py --noconfirm
 ```
 
