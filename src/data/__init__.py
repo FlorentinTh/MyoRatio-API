@@ -6,16 +6,17 @@ import dask.dataframe.io.csv as dd
 import pandas as pd
 
 
+class Frequency(Enum):
+    EMG_TRIG = 1925.93
+    EMG_IM = 1111.11
+    IMU = 148.15
+
+
 class Column(Enum):
     EMG_TRIG = 0
     EMG_IM = 1
     ACCELEROMETER_TIBIALIS_ANTERIOR = 2
     ACCELEROMETER_TENSOR_FASCIAE_LATAE = 3
-
-
-class Analysis(Enum):
-    EXTENSION = "extension"
-    FLEXION = "flexion"
 
 
 class _Data:
@@ -33,6 +34,9 @@ class _Data:
             raise pd.errors.ParserError(error)
 
     def _get_column_data(self, column: int) -> pd.DataFrame:
+        if column not in [column.value for column in Column]:
+            raise ValueError(f"Expected a value from ResponseStatus, but got {column}")
+
         if column == 0:
             return self._dataframe.filter(regex=r"^(?=.*EMG)(?!.*\(IM\)).*")
         elif column == 1:

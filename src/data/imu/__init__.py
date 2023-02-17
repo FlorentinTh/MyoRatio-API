@@ -3,11 +3,10 @@ import math
 import numpy as np
 import pandas as pd
 
-from src.helpers import JSONHelper, PlotHelper
-
-from .data import Analysis, Column, _Data
-from .frequencies import Frequency
-from .resample import Resample
+from src.api.helpers import JSONHelper, PlotHelper
+from src.data import Column, Frequency, _Data
+from src.data.processing.resample import Resample
+from src.task import Analysis
 
 
 class IMU(_Data):
@@ -15,7 +14,12 @@ class IMU(_Data):
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
-        self._analysis = analysis
+
+        if analysis in [analysis.value for analysis in Analysis]:
+            self._analysis = analysis
+        else:
+            raise ValueError(f"Expected a value from ResponseStatus, but got {analysis}")
+
         _Data.__init__(self, csv_file, is_imu=True)
 
     def _get_accelerometer_raw_data(self) -> pd.DataFrame:

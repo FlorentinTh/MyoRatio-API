@@ -1,12 +1,16 @@
 from typing import Optional
 
-from .data import Analysis
+from src.task import Analysis
 
 
 class Results:
     def __init__(self, areas: dict, analysis: str):
         self._areas = areas
-        self._analysis = analysis
+
+        if analysis in [analysis.value for analysis in Analysis]:
+            self._analysis = analysis
+        else:
+            raise ValueError(f"Expected a value from ResponseStatus, but got {analysis}")
 
     def get_ratios(self, iteration: Optional[int] = None) -> dict:
 

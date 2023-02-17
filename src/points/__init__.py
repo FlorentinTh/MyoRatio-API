@@ -1,17 +1,18 @@
 import random
-from enum import Enum
 
 import pandas as pd
 
-
-class Stage(Enum):
-    CONCENTRIC = "concentric"
-    ECCENTRIC = "eccentric"
+from src.task import Stage
 
 
 class Points:
     def __init__(self, stage: str, json_file_path: str) -> None:
-        self._stage = stage
+
+        if stage in [stage.value for stage in Stage]:
+            self._stage = stage
+        else:
+            raise ValueError(f"Expected a value from ResponseStatus, but got {stage}")
+
         self._dataframe = None
 
         try:

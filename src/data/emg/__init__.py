@@ -1,16 +1,13 @@
 import math
 from enum import Enum
-from typing import Optional
 
 import numpy as np
 import pandas as pd
-from scipy import integrate, signal
+from scipy import signal
 
-from src.helpers import CSVHelper
-
-from .data import Column, _Data
-from .frequencies import Frequency
-from .resample import Resample
+from src.api.helpers import CSVHelper
+from src.data import Column, Frequency, _Data
+from src.data.processing import Resample
 
 
 class FilterOptions(Enum):
@@ -80,6 +77,7 @@ class EMG(_Data):
         order = FilterOptions.ORDER.value
         lowpass_frequency_cutoff = FilterOptions.LOWPASS_FREQUENCY_CUTOFF.value
         highpass_frequency_cutoff = FilterOptions.HIGHPASS_FREQUENCY_CUTOFF.value
+
         iir_filter_sos = signal.butter(
             order,
             [lowpass_frequency_cutoff, highpass_frequency_cutoff],
@@ -87,12 +85,14 @@ class EMG(_Data):
             fs=Frequency.EMG_TRIG.value,
             output="sos",
         )
+
         all_emg_filtered_data = pd.DataFrame()
 
         for i, column in enumerate(removed_mean_all_emg_data):
             filtered = signal.sosfilt(
                 iir_filter_sos, removed_mean_all_emg_data[column].to_numpy()
             )
+
             all_emg_filtered_data[removed_mean_all_emg_data[column].name] = pd.Series(
                 filtered
             )
