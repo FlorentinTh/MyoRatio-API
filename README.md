@@ -166,7 +166,7 @@ _Windows_
 # Edit the configuration.py file if needed
 
 # Run the project:
-(venv) > py app.py
+(venv) > py server.py
 ```
 
 _macOS_
@@ -186,7 +186,7 @@ $ source ./venv/bin/activate
 # Edit the configuration.py file if needed
 
 # Run the project:
-(venv) > python3 app.py
+(venv) > python3 server.py
 ```
 
 - GUI:
