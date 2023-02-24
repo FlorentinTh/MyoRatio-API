@@ -16,7 +16,12 @@ class Points:
         self._dataframe = None
 
         try:
-            self._dataframe = pd.read_json(json_file_path)
+            self._dataframe = pd.read_json(
+                json_file_path, precise_float=False, encoding="utf-8", convert_dates=False
+            )
+
+            self._dataframe["x"] = self._dataframe["x"].astype("float32")
+
         except pd.errors.ParserError as error:
             raise (error)
 
@@ -52,16 +57,18 @@ class Points:
                 ),
             )
 
-        return [
+        points = [
             {
-                "x": self._dataframe._get_value(point_1x_index, "x"),
-                "y": self._dataframe._get_value(point_1x_index, "y"),
+                "x": self._dataframe.at[point_1x_index, "x"].astype(str),
+                "y": self._dataframe.at[point_1x_index, "y"],
             },
             {
-                "x": self._dataframe._get_value(point_2x_index, "x"),
-                "y": self._dataframe._get_value(point_2x_index, "y"),
+                "x": self._dataframe.at[point_2x_index, "x"].astype(str),
+                "y": self._dataframe.at[point_2x_index, "y"],
             },
         ]
+
+        return points
 
     def _points_retrieval(self) -> list[dict[str, float]]:
         # for window in df.rolling(window=20):
