@@ -9,7 +9,7 @@ from pandas import errors as pd_errors
 
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import JSONHelper
+from emgtrigno.api.helpers import FileHelper, JSONHelper
 from emgtrigno.areas import Areas
 from emgtrigno.results import Results
 
@@ -21,10 +21,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
     data_path_parameter = os.path.normpath(body["data_path"])
 
     data_path = os.path.join(
-        data_path_parameter,
-        "analysis",
-        ".metadata",
-        body["analysis"],
+        FileHelper.get_metadata_analysis_path(data_path_parameter, body["analysis"]),
         participant,
     )
 

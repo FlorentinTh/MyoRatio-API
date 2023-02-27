@@ -6,6 +6,7 @@ from pandas import errors as pd_errors
 
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
+from emgtrigno.api.helpers import FileHelper
 
 from .emg import EMG
 
@@ -43,9 +44,9 @@ def generate_emg_analysis() -> tuple[Response, int]:
             )
 
         data_path = os.path.join(
-            os.path.normpath(body["data_path"]),
-            "analysis",
-            body["analysis"],
+            FileHelper.get_analysis_folder_path(
+                os.path.normpath(body["data_path"]), body["analysis"]
+            ),
             body["participant"],
         )
 

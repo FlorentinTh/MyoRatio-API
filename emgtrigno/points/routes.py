@@ -5,6 +5,7 @@ from flask import Blueprint, Response, request
 
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
+from emgtrigno.api.helpers import FileHelper
 
 from .points import Points
 
@@ -39,10 +40,9 @@ def get_points_automatically() -> tuple[Response, int]:
             )
 
         data_path = os.path.join(
-            os.path.normpath(body["data_path"]),
-            "analysis",
-            ".metadata",
-            body["analysis"],
+            FileHelper.get_metadata_analysis_path(
+                os.path.normpath(body["data_path"]), body["analysis"]
+            ),
             body["participant"],
         )
 
