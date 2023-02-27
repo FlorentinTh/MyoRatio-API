@@ -24,9 +24,11 @@ class JSONHelper:
         participant_metadata_folder = FileHelper.get_participant_metadata_folder(
             base_path, csv_path
         )
+
         json_file_output_path = os.path.join(
             participant_metadata_folder, json_output_filename
         )
+
         data.to_json(json_file_output_path, orient="records")
 
     @staticmethod
@@ -41,3 +43,20 @@ class JSONHelper:
 
         with open(path, "w") as write_file:
             json.dump(data, write_file)
+
+    @staticmethod
+    def read_participants_metadata(metadata_analysis_path: str):
+        participants = []
+
+        metadata_file = open(
+            os.path.join(metadata_analysis_path, "data.json"), mode="r", encoding="utf-8"
+        )
+
+        metadata = json.load(metadata_file)
+
+        metadata_file.close()
+
+        for participant in metadata.items():
+            participants.append(participant)
+
+        return participants
