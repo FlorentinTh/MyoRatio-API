@@ -4,7 +4,7 @@ from datetime import datetime
 from jinja2 import Template
 from xhtml2pdf import pisa
 
-from emgtrigno.api.helpers import FileHelper, JSONHelper
+from emgtrigno.api.helpers import FileHelper, JSONHelper, PathHelper
 from emgtrigno.task import Analysis
 
 
@@ -24,7 +24,14 @@ class Report:
 
     def _create_HTML_report_file(self, content: dict) -> str:
         with open(
-            os.path.join(os.path.dirname(__file__), "template", "report.html"), "r"
+            os.path.join(
+                PathHelper.get_root_module_path(),
+                "assets",
+                "report",
+                "template",
+                "report.html",
+            ),
+            "r",
         ) as file:
             template_string = file.read()
 
@@ -50,7 +57,6 @@ class Report:
         return html_output_path
 
     def generate_PDF_report(self) -> None:
-
         participants = self._get_participants_metadata()
 
         content = {
