@@ -9,7 +9,8 @@ from emgtrigno.task import Analysis
 
 
 class Report:
-    def __init__(self, data_path: str, analysis: str) -> None:
+    def __init__(self, report_template_path: str, data_path: str, analysis: str) -> None:
+        self._report_template_path = report_template_path
         self._data_path = data_path
 
         if analysis in [analysis.value for analysis in Analysis]:
@@ -23,16 +24,7 @@ class Report:
         )
 
     def _create_HTML_report_file(self, content: dict) -> str:
-        with open(
-            os.path.join(
-                PathHelper.get_root_module_path(),
-                "assets",
-                "report",
-                "template",
-                "report.html",
-            ),
-            "r",
-        ) as file:
+        with open(self._report_template_path, mode="r", encoding="utf-8") as file:
             template_string = file.read()
 
         file.close()
@@ -45,11 +37,7 @@ class Report:
             f"{self._analysis}_report.html",
         )
 
-        with open(
-            html_output_path,
-            mode="w",
-            encoding="utf-8",
-        ) as results:
+        with open(html_output_path, mode="w", encoding="utf-8") as results:
             results.write(html_content)
 
         results.close()

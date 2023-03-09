@@ -21,7 +21,7 @@ def generate_report() -> tuple[Response, int]:
         )
 
     else:
-        schema = {"data_path": str, "analysis": str}
+        schema = {"report_template_path": str, "data_path": str, "analysis": str}
 
         validation = API.validate_request_body(body, schema)
 
@@ -31,7 +31,9 @@ def generate_report() -> tuple[Response, int]:
             )
 
         try:
-            report = Report(body["data_path"], body["analysis"])
+            report = Report(
+                body["report_template_path"], body["data_path"], body["analysis"]
+            )
             report.generate_PDF_report()
         except Exception as error:
             return API.error_response(
