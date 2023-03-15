@@ -6,6 +6,7 @@ from flask import Flask
 from gevent.pywsgi import WSGIServer
 
 from configuration import Configuration
+from emgtrigno.api.routes import api_blueprint
 from emgtrigno.data.emg.routes import emg_blueprint
 from emgtrigno.data.imu.routes import imu_blueprint
 from emgtrigno.points.routes import points_blueprint
@@ -14,6 +15,7 @@ from emgtrigno.results.routes import results_blueprint
 
 app = Flask(__name__)
 
+app.register_blueprint(api_blueprint, url_prefix="/api")
 app.register_blueprint(imu_blueprint, url_prefix="/api/data")
 app.register_blueprint(emg_blueprint, url_prefix="/api/data")
 app.register_blueprint(points_blueprint, url_prefix="/api")
