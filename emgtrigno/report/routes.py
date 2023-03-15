@@ -1,5 +1,3 @@
-import os
-
 from flask import Blueprint, Response, request
 
 from emgtrigno.api import API, ResponseStatus
