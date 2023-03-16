@@ -71,10 +71,68 @@ class Points:
         return points
 
     def _points_retrieval(self) -> list[dict[str, float]]:
-        # for window in df.rolling(window=20):
-        #     print(window.mean(), window.min(), window.max())
-        #     print("------------")
-        return []
+        if self._dataframe is None:
+            raise ValueError(f"class Points was not properly initialized")
+
+        window_size = 10
+        rolling_values = self._dataframe["y"].rolling(window_size, min_periods=1).mean()
+
+        start_index = None
+        stop_index = None
+
+        if self._stage == Stage.CONCENTRIC.value:
+            for i in range(len(rolling_values)):
+                current = int(rolling_values[i])
+
+                if 1 < i < len(rolling_values) - 2:
+                    if start_index is None:
+                        if current < int(rolling_values[i - 1]):
+                            start_index = i
+
+                    if stop_index is None and start_index is not None:
+                        if int(rolling_values[i + 1]) > current:
+                            for j in range(i - 1, -1, -1):
+                                if int(rolling_values[j - 1]) > int(rolling_values[j]):
+                                    stop_index = j
+                                    break
+        else:
+            for i in range(len(rolling_values) - 1, -1, -1):
+                current = int(rolling_values[i])
+
+                if len(rolling_values) - 2 > i > 2:
+
+                    if start_index is None:
+                        if (
+                            current
+                            < int(rolling_values[i + 1])
+                            < int(rolling_values[i + 2])
+                        ):
+                            start_index = i
+
+                    if stop_index is None and start_index is not None:
+                        if int(rolling_values[i - 1]) > current:
+                            stop_index = i
+
+        if start_index is None or stop_index is None:
+            raise ValueError("Automatic points identification failed")
+        else:
+            if stop_index > start_index:
+                point_1x_index = start_index
+                point_2x_index = stop_index
+            else:
+                point_1x_index = stop_index
+                point_2x_index = start_index
+
+        return [
+            {
+                "x": self._dataframe.at[point_1x_index, "x"].astype(str),
+                "y": self._dataframe.at[point_1x_index, "y"],
+            },
+            {
+                "x": self._dataframe.at[point_2x_index, "x"].astype(str),
+                "y": self._dataframe.at[point_2x_index, "y"],
+            },
+        ]
 
     def get_points(self) -> list[dict[str, float]]:
-        return self._dumb_points_retrieval()
+        return self._points_retrieval()
