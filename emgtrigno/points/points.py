@@ -81,25 +81,31 @@ class Points:
         stop_index = None
 
         if self._stage == Stage.CONCENTRIC.value:
+            forward_limit = 1
+
             for i in range(len(rolling_values)):
                 current = int(rolling_values[i])
 
-                if 1 < i < len(rolling_values) - 2:
+                if forward_limit < i < len(rolling_values) - forward_limit:
                     if start_index is None:
                         if current < int(rolling_values[i - 1]):
-                            start_index = i
+                            start_index = i - 1
 
                     if stop_index is None and start_index is not None:
                         if int(rolling_values[i + 1]) > current:
                             for j in range(i - 1, -1, -1):
-                                if int(rolling_values[j - 1]) > int(rolling_values[j]):
-                                    stop_index = j
+                                if int(rolling_values[j - 2]) > int(
+                                    rolling_values[j - 1]
+                                ):
+                                    stop_index = j - 1
                                     break
-        else:
+        elif self._stage == Stage.ECCENTRIC.value:
+            forward_limit = 2
+
             for i in range(len(rolling_values) - 1, -1, -1):
                 current = int(rolling_values[i])
 
-                if len(rolling_values) - 2 > i > 2:
+                if len(rolling_values) - forward_limit > i > forward_limit:
 
                     if start_index is None:
                         if (
@@ -111,7 +117,10 @@ class Points:
 
                     if stop_index is None and start_index is not None:
                         if int(rolling_values[i - 1]) > current:
-                            stop_index = i
+                            for j in range(i, len(rolling_values) - 1, 1):
+                                if int(rolling_values[j]) < int(rolling_values[j + 1]):
+                                    stop_index = j
+                                    break
 
         if start_index is None or stop_index is None:
             raise ValueError("Automatic points identification failed")
