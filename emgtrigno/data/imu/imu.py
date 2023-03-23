@@ -2,6 +2,7 @@ import math
 
 import numpy as np
 import pandas as pd
+from scipy.signal import savgol_filter
 
 from emgtrigno.api.helpers import JSONHelper, PlotHelper
 from emgtrigno.data import Column, Frequencies, _Data
@@ -78,7 +79,7 @@ class IMU(_Data):
 
         return data
 
-    def _reduce_angle_data(self, data: pd.DataFrame) -> None:
+    def _reduce_angle_data(self, data: pd.DataFrame) -> pd.DataFrame:
         data = data.reset_index(drop=False)
         data_length = len(str(len(data)))
 
@@ -88,8 +89,7 @@ class IMU(_Data):
             i = i + 1
             step += "0"
 
-        data = data.iloc[:: int(step), :]
-        JSONHelper.write_angle_file(self._base_path, self._csv_path, data, prefix="small")
+        return data.iloc[:: int(step), :]
 
     def start_processing(self) -> None:
         indexes = np.where(self._dataframe.iloc[:, 0].isna())[0]
@@ -98,11 +98,31 @@ class IMU(_Data):
             self._dataframe = self._dataframe.iloc[: indexes[0], :]
 
         data_acc = self._get_accelerometer_raw_data()
+
         resampled_acc_data = Resample(
             data_acc, Frequencies.EMG_TRIG.value, Frequencies.IMU.value
         ).get_data()
+
         angle_data = self._compute_angle(resampled_acc_data)
-        self._reduce_angle_data(angle_data)
+        reduced_angle_data = self._reduce_angle_data(angle_data)
+        JSONHelper.write_angle_file(
+            self._base_path, self._csv_path, reduced_angle_data, prefix="small"
+        )
+
+        filtered_angle_data = savgol_filter(reduced_angle_data["y"], 10, 1)
+        filtered_angle_data = pd.DataFrame(
+            {
+                reduced_angle_data.columns[0]: reduced_angle_data[
+                    reduced_angle_data.columns[0]
+                ],
+                "y": filtered_angle_data,
+            }
+        )
+
+        JSONHelper.write_angle_file(
+            self._base_path, self._csv_path, filtered_angle_data, prefix="filtered"
+        )
+
         plot_helper = PlotHelper(self._csv_path, angle_data)
         plot_helper.build_plot(
             legend="z-axis angle", x_label="Seconds", y_label="Degrees"
