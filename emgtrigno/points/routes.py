@@ -46,7 +46,7 @@ def get_points_automatically() -> tuple[Response, int]:
             body["participant"],
         )
 
-        json_files = glob(os.path.join(data_path, "small_*.json"))
+        json_files = glob(os.path.join(data_path, "filtered_*.json"))
         points = Points(body["stage"], json_files[body["iteration"]])
 
         try:
