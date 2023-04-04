@@ -129,4 +129,4 @@ class IMU(_Data):
         )
         plot_helper.save_plot(self._base_path, prefix="plot_angle")
         angle_data.reset_index(inplace=True)
-        # JSONHelper.write_angle_file(self._base_path, self._csv_path, angle_data, prefix='full')
+        JSONHelper.write_angle_file(self._base_path, self._csv_path, angle_data, prefix='full')
