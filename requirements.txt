@@ -67,6 +67,7 @@ six==1.16.0
 svglib==1.5.1
 termcolor==2.2.0
 tinycss2==1.2.1
+tomli==2.0.1
 tomlkit==0.11.6
 toolz==0.12.0
 typing_extensions==4.4.0
@@ -78,5 +79,6 @@ wcwidth==0.2.6
 webencodings==0.5.1
 Werkzeug==2.2.2
 xhtml2pdf==0.2.9
+XlsxWriter==3.0.9
 zope.event==4.6
 zope.interface==5.5.2

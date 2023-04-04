@@ -45,7 +45,7 @@ class JSONHelper:
             json.dump(data, write_file)
 
     @staticmethod
-    def read_participants_metadata(metadata_analysis_path: str):
+    def read_participants_metadata(metadata_analysis_path: str) -> list:
         participants = []
 
         metadata_file = open(
