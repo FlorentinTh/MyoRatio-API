@@ -19,7 +19,9 @@ class _Data:
 
         try:
             if is_imu is True:
-                self._dataframe = dd.read_csv(self._csv_file).compute()
+                self._dataframe = dd.read_csv(
+                    self._csv_file, assume_missing=True
+                ).compute()
             else:
                 self._dataframe = pd.read_csv(
                     self._csv_file, engine="c", encoding="utf-8"
