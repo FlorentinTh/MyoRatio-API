@@ -8,45 +8,45 @@ from .report import Report
 report_blueprint = Blueprint("report_blueprint", __name__)
 
 
-@report_blueprint.route("/report/pdf", methods=["POST"])
-@auth.login_required
-def generate_pdf_report() -> tuple[Response, int]:
-    body = request.json
+# @report_blueprint.route("/report/pdf", methods=["POST"])
+# @auth.login_required
+# def generate_pdf_report() -> tuple[Response, int]:
+#     body = request.json
 
-    if body is None:
-        return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
-        )
+#     if body is None:
+#         return API.error_response(
+#             400, f"Request body is not properly formatted", "request body is empty"
+#         )
 
-    else:
-        schema = {"report_template_path": str, "data_path": str, "analysis": str}
+#     else:
+#         schema = {"report_template_path": str, "data_path": str, "analysis": str}
 
-        validation = API.validate_request_body(body, schema)
+#         validation = API.validate_request_body(body, schema)
 
-        if validation is not None:
-            return API.error_response(
-                400, f"Request body is not properly formatted", validation
-            )
+#         if validation is not None:
+#             return API.error_response(
+#                 400, f"Request body is not properly formatted", validation
+#             )
 
-        try:
-            report = Report(
-                body["report_template_path"], body["data_path"], body["analysis"]
-            )
-            report.generate_PDF_report()
-        except Exception as error:
-            return API.error_response(
-                500, f"Error occurs while trying to generate PDF report", str(error)
-            )
+#         try:
+#             report = Report(
+#                 body["report_template_path"], body["data_path"], body["analysis"]
+#             )
+#             report.generate_PDF_report()
+#         except Exception as error:
+#             return API.error_response(
+#                 500, f"Error occurs while trying to generate PDF report", str(error)
+#             )
 
-        # file deepcode ignore XSS: already sanitized
-        return API.success_response(
-            201,
-            ResponseStatus.CREATED.value,
-            {
-                "data_path": body["data_path"],
-                "analysis": body["analysis"],
-            },
-        )
+#         # file deepcode ignore XSS: already sanitized
+#         return API.success_response(
+#             201,
+#             ResponseStatus.CREATED.value,
+#             {
+#                 "data_path": body["data_path"],
+#                 "analysis": body["analysis"],
+#             },
+#         )
 
 
 @report_blueprint.route("/report/xlsx", methods=["POST"])

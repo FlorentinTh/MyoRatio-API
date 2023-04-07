@@ -27,6 +27,9 @@ class Report:
             FileHelper.get_metadata_analysis_path(self._data_path, self._analysis)
         )
 
+    ##
+    # Not currently used (unlink from API route and from GUI)
+    ##
     def _create_HTML_report_file(self, content: dict) -> str:
         if self._report_template_path is not None:
             with open(self._report_template_path, mode="r", encoding="utf-8") as file:
@@ -51,12 +54,11 @@ class Report:
 
         return html_output_path
 
+    ##
+    # Not currently used (unlink from API route and from GUI)
+    ##
     def generate_PDF_report(self) -> None:
         participants = self._get_participants_metadata()
-
-        ##
-        ## TODO: complete pdf report according to provided template
-        ##
 
         content = {
             "analysis": self._analysis,
