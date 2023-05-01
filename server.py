@@ -1,3 +1,5 @@
+import sys
+
 from gevent import monkey
 
 monkey.patch_all()
@@ -23,9 +25,9 @@ app.register_blueprint(results_blueprint, url_prefix="/api")
 app.register_blueprint(report_blueprint, url_prefix="/api")
 
 
-def start_server():
+def start_server(port: int) -> None:
     with WSGIServer(
-        (Configuration.HOST.value, Configuration.PORT.value),
+        (Configuration.HOST.value, port),
         app,
         backlog=2048,
     ) as http:
@@ -36,4 +38,9 @@ def start_server():
 
 
 if __name__ == "__main__":
-    start_server()
+    if sys.argv[1] is not None:
+        port_parameter = int(sys.argv[1])
+    else:
+        port_parameter = 3300
+
+    start_server(port_parameter)
