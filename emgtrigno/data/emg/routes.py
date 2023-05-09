@@ -6,7 +6,7 @@ from pandas import errors as pd_errors
 
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import FileHelper
+from emgtrigno.api.helpers import PathHelper
 
 from .emg import EMG
 
@@ -44,7 +44,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
             )
 
         data_path = os.path.join(
-            FileHelper.get_analysis_folder_path(
+            PathHelper.get_analysis_folder_path(
                 os.path.normpath(body["data_path"]), body["analysis"]
             ),
             body["participant"],
@@ -66,7 +66,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
             emg = None
 
             try:
-                emg = EMG(body["data_path"], csv_file, body["stage"])
+                emg = EMG(body["data_path"], body["stage"], csv_file=csv_file)
             except pd_errors.ParserError as error:
                 if emg is not None:
                     message = (

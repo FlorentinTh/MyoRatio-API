@@ -6,11 +6,11 @@ import pandas as pd
 matplotlib.use("SVG")
 from matplotlib import pyplot as plt
 
-from .file_helper import FileHelper
+from .path_helper import PathHelper
 
 
 class PlotHelper:
-    def __init__(self, csv_path: tuple, data: pd.DataFrame):
+    def __init__(self, csv_path: tuple[str, str], data: pd.DataFrame):
         self._csv_path = csv_path
         self._data = data
 
@@ -40,8 +40,8 @@ class PlotHelper:
         axes.tick_params(axis="y", colors="#575757", labelsize=12)
         axes.tick_params(color="#d5d5d5", which="both")
 
-    def save_plot(self, base_path: str, prefix: str = None) -> None:
-        if prefix is None:
+    def save_plot(self, base_path: str, prefix: str = "") -> None:
+        if bool(prefix and prefix.isspace()) is True:
             filename = os.path.splitext(self._csv_path[1])[0] + ".svg"
         else:
             filename = f"{prefix}_" + os.path.splitext(self._csv_path[1])[0] + ".svg"
@@ -51,7 +51,7 @@ class PlotHelper:
         participant = split_path[len(split_path) - 1]
 
         plot_path = os.path.join(
-            FileHelper.get_analysis_folder_path(base_path, analysis),
+            PathHelper.get_analysis_folder_path(base_path, analysis),
             participant,
             filename,
         )

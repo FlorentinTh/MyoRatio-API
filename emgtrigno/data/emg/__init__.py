@@ -1,1 +1,1 @@
-from .emg import EMG
+from .emg import EMG, NormalizationOptions

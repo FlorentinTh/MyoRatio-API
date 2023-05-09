@@ -7,9 +7,10 @@ from dask.delayed import delayed
 from flask import Blueprint, Response, request
 from pandas import errors as pd_errors
 
+from emgtrigno.angles import Angles
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import FileHelper, JSONHelper
+from emgtrigno.api.helpers import PathHelper
 from emgtrigno.areas import Areas
 from emgtrigno.results import Results
 
@@ -21,7 +22,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
     data_path_parameter = os.path.normpath(body["data_path"])
 
     data_path = os.path.join(
-        FileHelper.get_metadata_analysis_path(data_path_parameter, body["analysis"]),
+        PathHelper.get_metadata_analysis_path(data_path_parameter, body["analysis"]),
         participant,
     )
 
@@ -29,7 +30,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
 
     if len(csv_files) > 0:
         try:
-            areas = Areas(data_path, csv_files)
+            areas = Areas(data_path, body["stage"], csv_files=csv_files)
         except pd_errors.ParserError as error:
             return {
                 "code": 500,
@@ -42,7 +43,28 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
             results = Results(areas, body["analysis"])
 
             try:
-                ratios = results.get_ratios()
+                angles = Angles(data_path)
+
+                csv_files = glob(os.path.join(data_path, f"normalized_angles_*.csv"))
+
+                if len(csv_files) > 0:
+                    angles.start_processing(csv_files)
+                else:
+                    return {
+                        "code": 404,
+                        "message": "Missing data",
+                        "details": f"No CSV files found in path: {data_path}",
+                    }
+
+            except Exception as error:
+                return {
+                    "code": 500,
+                    "message": f"Error occurs while trying to compute mean angles",
+                    "details": str(error),
+                }
+
+            try:
+                ratios = results.compute_ratios()
             except Exception as error:
                 return {
                     "code": 500,
@@ -50,7 +72,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
                     "details": str(error),
                 }
 
-            JSONHelper.write_ratio_file(data_path, body["stage"], ratios)
+            results.write_ratios(data_path, body["stage"], ratios)
 
         except Exception as error:
             return {

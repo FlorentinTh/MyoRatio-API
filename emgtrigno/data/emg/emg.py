@@ -1,12 +1,15 @@
 import math
+import os
 from enum import Enum
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 from scipy import signal
 
-from emgtrigno.api.helpers import CSVHelper
-from emgtrigno.data import Column, Frequencies, _Data
+from emgtrigno.angles import Angles
+from emgtrigno.api.helpers import PathHelper
+from emgtrigno.data import Column, DataExtractor, Frequencies, _Data
 from emgtrigno.data.processing import Resample
 
 
@@ -21,16 +24,20 @@ class NormalizationOptions(Enum):
 
 
 class EMG(_Data):
-    def __init__(self, base_path: str, csv_file: str, stage: str):
-        self._csv_file = csv_file
+    def __init__(
+        self, base_path: str, stage: str, csv_file: Optional[str] = None
+    ) -> None:
         self._base_path = base_path
-        self._csv_path = self.get_csv_path()
         self._stage = stage
-        _Data.__init__(self, csv_file)
 
-        self._emg_trig_data = None
-        self._emg_trig_time = None
-        self._emg_im_data = None
+        if csv_file is not None:
+            self._csv_file = csv_file
+            self._csv_path = self.get_csv_path()
+            _Data.__init__(self, self._csv_file)
+
+            self._emg_trig_data = None
+            self._emg_trig_time = None
+            self._emg_im_data = None
 
     def _get_emg_trig_raw_data(self) -> None:
         self._emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
@@ -53,7 +60,6 @@ class EMG(_Data):
     def _remove_mean_all_emg_data(
         self, resampled_emg_im_data: pd.DataFrame
     ) -> pd.DataFrame:
-
         if self._emg_trig_data is not None:
             data_all_emg = pd.concat([self._emg_trig_data, resampled_emg_im_data], axis=1)
             data_mean_all_emg_removed = pd.DataFrame(np.zeros(data_all_emg.shape))
@@ -138,12 +144,39 @@ class EMG(_Data):
 
         return all_emg_rms_envelope_data
 
-    @staticmethod
-    def _get_point_index(data: pd.DataFrame, point_x: float, point_y: float) -> dict:
-        return {
-            "x": data.index[data["X[s]"] == point_x].tolist()[0],
-            "y": data.index[data["X[s]"] == point_y].tolist()[0],
-        }
+    def _write_csv_data_file(
+        self, data: pd.DataFrame, prefix: Optional[str] = None
+    ) -> None:
+        if prefix is None:
+            csv_output_filename = (
+                f"{self._stage}_{os.path.splitext(self._csv_path[1])[0]}.csv"
+            )
+        else:
+            csv_output_filename = (
+                f"{prefix}_{self._stage}_{os.path.splitext(self._csv_path[1])[0]}.csv"
+            )
+
+        participant_metadata_folder = PathHelper.get_participant_metadata_folder(
+            self._base_path, self._csv_path
+        )
+
+        csv_file_output_path = os.path.join(
+            participant_metadata_folder, csv_output_filename
+        )
+
+        data.to_csv(csv_file_output_path, sep="\t", encoding="utf-8")
+
+    def get_mean_envelopes(self) -> pd.DataFrame:
+        csv_envelopes_file_path = os.path.join(
+            self._base_path, f"envelopes_{self._stage}.csv"
+        )
+
+        try:
+            return pd.read_csv(
+                csv_envelopes_file_path, sep="\t", encoding="utf-8", engine="c"
+            )
+        except pd.errors.ParserError as error:
+            raise pd.errors.ParserError(error)
 
     def start_processing(
         self, window_size: float, point_1x: float, point_2x: float
@@ -179,11 +212,8 @@ class EMG(_Data):
             all_emg_filtered_data, window_size
         )
 
-        points = self._get_point_index(all_emg_rms_envelope_data, point_1x, point_2x)
-
-        all_emg_between_points_data = all_emg_rms_envelope_data.iloc[
-            points["x"] : points["y"], :
-        ]
+        data_extractor = DataExtractor(all_emg_rms_envelope_data, point_1x, point_2x)
+        all_emg_between_points_data = data_extractor.extract_data()
 
         normalized_envelope_all_emg_data = Resample(
             all_emg_between_points_data,
@@ -195,13 +225,21 @@ class EMG(_Data):
             columns=all_emg_between_points_data.columns,
         )
 
-        normalized_envelope_all_emg_data.set_index(
-            normalized_envelope_all_emg_data.columns[0], inplace=True
+        self._write_csv_data_file(normalized_envelope_all_emg_data, prefix="envelope")
+
+        angles = Angles(self._base_path)
+        angles_data = angles.get_angles_data(self._csv_path, prefix="full")
+        data_extractor.data = angles_data
+        angles_between_points_data = data_extractor.extract_data()
+
+        normalized_angles_data = Resample(
+            angles_between_points_data,
+            fixed_value=NormalizationOptions.LENGTH.value,
+        ).get_data()
+
+        normalized_angles_data = pd.DataFrame(
+            normalized_angles_data,
+            columns=angles_between_points_data.columns,
         )
 
-        CSVHelper.write_normalized_envelope(
-            self._base_path,
-            self._csv_path,
-            self._stage,
-            normalized_envelope_all_emg_data,
-        )
+        self._write_csv_data_file(normalized_angles_data, prefix="normalized_angles")

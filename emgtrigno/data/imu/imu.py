@@ -1,17 +1,19 @@
 import math
+import os
+from typing import Optional
 
 import numpy as np
 import pandas as pd
 from scipy.signal import savgol_filter
 
-from emgtrigno.api.helpers import JSONHelper, PlotHelper
+from emgtrigno.api.helpers import PathHelper, PlotHelper
 from emgtrigno.data import Column, Frequencies, _Data
 from emgtrigno.data.processing.resample import Resample
 from emgtrigno.task import Analysis
 
 
 class IMU(_Data):
-    def __init__(self, base_path: str, csv_file: str, analysis: str):
+    def __init__(self, base_path: str, csv_file: str, analysis: str) -> None:
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
@@ -91,6 +93,35 @@ class IMU(_Data):
 
         return data.iloc[:: int(step), :]
 
+    def _write_angles(
+        self, data: pd.DataFrame, file_type: str, prefix: Optional[str] = None
+    ) -> None:
+        if file_type == "JSON":
+            ext = ".json"
+            data.rename(columns={f"{data.columns[0]}": "x"}, inplace=True)
+        elif file_type == "CSV":
+            ext = ".csv"
+        else:
+            raise ValueError("file_type argument must be JSON or CSV")
+
+        if prefix is None:
+            output_filename = f"angle_{os.path.splitext(self._csv_path[1])[0]}{ext}"
+        else:
+            output_filename = (
+                f"{prefix}_angle_{os.path.splitext(self._csv_path[1])[0]}{ext}"
+            )
+
+        participant_metadata_folder = PathHelper.get_participant_metadata_folder(
+            self._base_path, self._csv_path
+        )
+
+        file_output_path = os.path.join(participant_metadata_folder, output_filename)
+
+        if file_type == "JSON":
+            data.to_json(file_output_path, orient="records")
+        elif file_type == "CSV":
+            data.to_csv(file_output_path, sep="\t", encoding="utf-8")
+
     def start_processing(self) -> None:
         indexes = np.where(self._dataframe.iloc[:, 0].isna())[0]
 
@@ -104,10 +135,10 @@ class IMU(_Data):
         ).get_data()
 
         angle_data = self._compute_angle(resampled_acc_data)
+
         reduced_angle_data = self._reduce_angle_data(angle_data)
-        JSONHelper.write_angle_file(
-            self._base_path, self._csv_path, reduced_angle_data, prefix="small"
-        )
+
+        self._write_angles(reduced_angle_data, "JSON", prefix="small")
 
         filtered_angle_data = savgol_filter(reduced_angle_data["y"], 10, 1)
         filtered_angle_data = pd.DataFrame(
@@ -119,16 +150,12 @@ class IMU(_Data):
             }
         )
 
-        JSONHelper.write_angle_file(
-            self._base_path, self._csv_path, filtered_angle_data, prefix="filtered"
-        )
+        self._write_angles(filtered_angle_data, "JSON", prefix="filtered")
 
         plot_helper = PlotHelper(self._csv_path, angle_data)
         plot_helper.build_plot(
             legend="z-axis angle", x_label="Seconds", y_label="Degrees"
         )
         plot_helper.save_plot(self._base_path, prefix="plot_angle")
-        angle_data.reset_index(inplace=True)
-        JSONHelper.write_angle_file(
-            self._base_path, self._csv_path, angle_data, prefix="full"
-        )
+
+        self._write_angles(angle_data, "CSV", prefix="full")

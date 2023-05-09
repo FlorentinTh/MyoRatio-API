@@ -9,7 +9,7 @@ from pandas import errors as pd_errors
 
 from emgtrigno.api import API, ResponseStatus
 from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import FileHelper
+from emgtrigno.api.helpers import PathHelper
 
 from .imu import IMU
 
@@ -21,7 +21,7 @@ def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
     data_path_parameter = os.path.normpath(body["data_path"])
 
     data_path = os.path.join(
-        FileHelper.get_analysis_folder_path(data_path_parameter, body["analysis"]),
+        PathHelper.get_analysis_folder_path(data_path_parameter, body["analysis"]),
         participant,
     )
 
@@ -33,7 +33,7 @@ def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
 
             files = os.listdir(
                 os.path.join(
-                    FileHelper.get_metadata_analysis_path(
+                    PathHelper.get_metadata_analysis_path(
                         data_path_parameter, body["analysis"]
                     ),
                     participant,
