@@ -14,7 +14,7 @@ class Column(Enum):
 
 
 class _Data:
-    def __init__(self, csv_file: str, is_imu: bool = False):
+    def __init__(self, csv_file: str, is_imu: bool = False) -> None:
         self._csv_file = csv_file
 
         try:
@@ -57,5 +57,5 @@ class _Data:
         emg_trig_time = self._get_time_emg(emg_trig_data)
         return emg_trig_time.dropna().iloc[-1:].tolist()[0]
 
-    def get_csv_path(self) -> tuple:
+    def get_csv_path(self) -> tuple[str, str]:
         return os.path.split(self._csv_file)

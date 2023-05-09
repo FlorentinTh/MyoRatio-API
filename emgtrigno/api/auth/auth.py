@@ -9,5 +9,5 @@ api_key_hashed = APIKey.hash_key(Configuration.API_KEY.value)
 
 
 @auth.verify_token
-def verify_api_key(key) -> bool:
+def verify_api_key(key: str) -> bool:
     return bcrypt.checkpw(key.encode("utf-8"), api_key_hashed)

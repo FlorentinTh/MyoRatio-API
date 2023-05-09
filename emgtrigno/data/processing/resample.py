@@ -13,7 +13,7 @@ class Resample:
         high_frequency: Optional[float] = None,
         low_frequency: Optional[float] = None,
         fixed_value: Optional[int] = None,
-    ):
+    ) -> None:
         self._data = data
         self._high_frequency = high_frequency
         self._low_frequency = low_frequency
@@ -21,7 +21,6 @@ class Resample:
 
     def get_data(self) -> np.ndarray:
         if self._fixed_value is None:
-
             if self._high_frequency is not None and self._low_frequency is not None:
                 frequency_fraction = Fraction(
                     self._high_frequency / self._low_frequency
