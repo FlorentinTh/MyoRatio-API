@@ -2,12 +2,11 @@ import random
 
 import pandas as pd
 
-from emgtrigno.task import Stage
+from myoratio.task import Stage
 
 
 class Points:
     def __init__(self, stage: str, json_file_path: str) -> None:
-
         if stage in [stage.value for stage in Stage]:
             self._stage = stage
         else:
@@ -106,7 +105,6 @@ class Points:
                 current = int(rolling_values[i])
 
                 if len(rolling_values) - forward_limit > i > forward_limit:
-
                     if start_index is None:
                         if (
                             current

@@ -3,9 +3,9 @@ from glob import glob
 
 from flask import Blueprint, Response, request
 
-from emgtrigno.api import API, ResponseStatus
-from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import PathHelper
+from myoratio.api import API, ResponseStatus
+from myoratio.api.auth import auth
+from myoratio.api.helpers import PathHelper
 
 from .points import Points
 

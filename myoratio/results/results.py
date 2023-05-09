@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
-from emgtrigno.task import Analysis
+from myoratio.task import Analysis
 
 
 class Results:

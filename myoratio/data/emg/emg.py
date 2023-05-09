@@ -7,10 +7,10 @@ import numpy as np
 import pandas as pd
 from scipy import signal
 
-from emgtrigno.angles import Angles
-from emgtrigno.api.helpers import PathHelper
-from emgtrigno.data import Column, DataExtractor, Frequencies, _Data
-from emgtrigno.data.processing import Resample
+from myoratio.angles import Angles
+from myoratio.api.helpers import PathHelper
+from myoratio.data import Column, DataExtractor, Frequencies, _Data
+from myoratio.data.processing import Resample
 
 
 class FilterOptions(Enum):

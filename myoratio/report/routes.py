@@ -4,9 +4,9 @@ from dask.base import compute
 from dask.delayed import delayed
 from flask import Blueprint, Response, request
 
-from emgtrigno.api import API, ResponseStatus
-from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import JSONHelper, PathHelper
+from myoratio.api import API, ResponseStatus
+from myoratio.api.auth import auth
+from myoratio.api.helpers import JSONHelper, PathHelper
 
 from .report import Report
 

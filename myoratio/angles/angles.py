@@ -3,7 +3,7 @@ from typing import Optional
 
 import pandas as pd
 
-from emgtrigno.api.helpers import JSONHelper, PathHelper, StringHelper
+from myoratio.api.helpers import JSONHelper, PathHelper, StringHelper
 
 
 class Angles:

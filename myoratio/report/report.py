@@ -5,13 +5,13 @@ import pandas as pd
 import xlsxwriter
 from xlsxwriter.utility import xl_col_to_name
 
-from emgtrigno.angles import Angles
-from emgtrigno.api import Constants
-from emgtrigno.api.helpers import PathHelper, StringHelper
-from emgtrigno.areas import Areas
-from emgtrigno.data.emg import EMG, NormalizationOptions
-from emgtrigno.results import Ratio, Results
-from emgtrigno.task import Analysis, Stage
+from myoratio.angles import Angles
+from myoratio.api import Constants
+from myoratio.api.helpers import PathHelper, StringHelper
+from myoratio.areas import Areas
+from myoratio.data.emg import EMG, NormalizationOptions
+from myoratio.results import Ratio, Results
+from myoratio.task import Analysis, Stage
 
 
 class Stats(Enum):

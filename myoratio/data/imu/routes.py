@@ -7,9 +7,9 @@ from dask.delayed import delayed
 from flask import Blueprint, Response, jsonify, request
 from pandas import errors as pd_errors
 
-from emgtrigno.api import API, ResponseStatus
-from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import PathHelper
+from myoratio.api import API, ResponseStatus
+from myoratio.api.auth import auth
+from myoratio.api.helpers import PathHelper
 
 from .imu import IMU
 

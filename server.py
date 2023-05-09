@@ -8,12 +8,12 @@ from flask import Flask
 from gevent.pywsgi import WSGIServer
 
 from configuration import Configuration
-from emgtrigno.api.routes import api_blueprint
-from emgtrigno.data.emg.routes import emg_blueprint
-from emgtrigno.data.imu.routes import imu_blueprint
-from emgtrigno.points.routes import points_blueprint
-from emgtrigno.report.routes import report_blueprint
-from emgtrigno.results.routes import results_blueprint
+from myoratio.api.routes import api_blueprint
+from myoratio.data.emg.routes import emg_blueprint
+from myoratio.data.imu.routes import imu_blueprint
+from myoratio.points.routes import points_blueprint
+from myoratio.report.routes import report_blueprint
+from myoratio.results.routes import results_blueprint
 
 app = Flask(__name__)
 

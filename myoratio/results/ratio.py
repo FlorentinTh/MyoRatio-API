@@ -1,4 +1,4 @@
-from emgtrigno.task import Analysis
+from myoratio.task import Analysis
 
 
 class Ratio:

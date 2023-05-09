@@ -7,12 +7,12 @@ from dask.delayed import delayed
 from flask import Blueprint, Response, request
 from pandas import errors as pd_errors
 
-from emgtrigno.angles import Angles
-from emgtrigno.api import API, ResponseStatus
-from emgtrigno.api.auth import auth
-from emgtrigno.api.helpers import PathHelper
-from emgtrigno.areas import Areas
-from emgtrigno.results import Results
+from myoratio.angles import Angles
+from myoratio.api import API, ResponseStatus
+from myoratio.api.auth import auth
+from myoratio.api.helpers import PathHelper
+from myoratio.areas import Areas
+from myoratio.results import Results
 
 results_blueprint = Blueprint("results_blueprint", __name__)
 

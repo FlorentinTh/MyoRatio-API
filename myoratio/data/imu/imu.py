@@ -6,10 +6,10 @@ import numpy as np
 import pandas as pd
 from scipy.signal import savgol_filter
 
-from emgtrigno.api.helpers import PathHelper, PlotHelper
-from emgtrigno.data import Column, Frequencies, _Data
-from emgtrigno.data.processing.resample import Resample
-from emgtrigno.task import Analysis
+from myoratio.api.helpers import PathHelper, PlotHelper
+from myoratio.data import Column, Frequencies, _Data
+from myoratio.data.processing.resample import Resample
+from myoratio.task import Analysis
 
 
 class IMU(_Data):
