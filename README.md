@@ -15,7 +15,7 @@ API for the MyoRatio Application
 
 ## Related Project
 
-- [MyoRatio-GUI](https://github.com/FlorentinTh/MyoRatio-GUII)
+- [MyoRatio-GUI](https://github.com/FlorentinTh/MyoRatio-GUI)
 
 ## Build the Release Application
 
