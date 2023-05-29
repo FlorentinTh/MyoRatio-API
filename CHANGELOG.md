@@ -18,13 +18,6 @@ All notable changes to this project will be documented in this file. See [standa
 
 * **project:** rename project from EMG Trigno to MyoRatio ([27bc63e](https://github.com/FlorentinTh/MyoRatio-API/commit/27bc63e63999f0b9ae7415ed5e824833e1d16930))
 
-## [2.0.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v1.2.0...v2.0.0) (2023-05-09)
-
-
-### Bug Fixes
-
-* **project:** rename project from EMG Trigno to MyoRatio ([27bc63e](https://github.com/FlorentinTh/MyoRatio-API/commit/27bc63e63999f0b9ae7415ed5e824833e1d16930))
-
 ## [1.2.0](https://github.com/FlorentinTh/EMG-Trigno-API/compare/v1.0.0...v1.2.0) (2023-05-09)
 
 
