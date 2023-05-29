@@ -44,39 +44,44 @@ class IMU(_Data):
         return data_acc_raw.iloc[:nb_imu_rows_to_keep]
 
     def _compute_angle(self, resampled_data: np.ndarray) -> pd.DataFrame:
-        accelerometer_x1 = resampled_data[:, 0]
-        accelerometer_y1 = resampled_data[:, 1]
-        accelerometer_z1 = resampled_data[:, 2]
+        accelerometer_x = resampled_data[:, 0]
+        accelerometer_y = resampled_data[:, 1]
+        accelerometer_z = resampled_data[:, 2]
 
-        # accelerometer_x = []
-        # accelerometer_y = []
-        accelerometer_z = []
+        angle_z = []
 
         for i, column in enumerate(resampled_data):
-            total = math.sqrt(
-                accelerometer_x1[i] ** 2
-                + accelerometer_y1[i] ** 2
-                + accelerometer_z1[i] ** 2
-            )
+            if self._analysis == Analysis.EXTENSION.value:
+                pitch = math.sqrt(accelerometer_x[i] ** 2 + accelerometer_z[i] ** 2)
 
-            if total == 0.0:
-                # accelerometer_x.append(math.asin(0) * 180 / math.pi)
-                # accelerometer_y.append(math.asin(0) * 180 / math.pi)
-                accelerometer_z.append(math.acos(0) * 180 / math.pi)
+                if pitch != 0.0:
+                    angle_z.extend(
+                        [180 * (math.atan(-accelerometer_y[i] / pitch) / math.pi)]
+                    )
             else:
-                # accelerometer_x.append(math.asin(accelerometer_x1[i] / total) * 180 / math.pi)
-                # accelerometer_y.append(math.asin(accelerometer_y1[i] / total) * 180 / math.pi)
-                accelerometer_z.append(
-                    math.acos(accelerometer_z1[i] / total) * 180 / math.pi
+                angle_z.extend(
+                    [
+                        90
+                        - (
+                            180
+                            * (
+                                math.atan(accelerometer_x[i] / abs(accelerometer_y[i]))
+                                / math.pi
+                            )
+                        )
+                    ]
                 )
 
         emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
+
         time_emg_trig = self._dataframe.iloc[
             :, self._dataframe.columns.get_loc(emg_trig_data.columns[0]) - 1
         ]
+
         data = pd.concat(
-            [time_emg_trig, pd.DataFrame(accelerometer_z, columns=["y"])], axis=1
+            [time_emg_trig, pd.DataFrame(angle_z, columns=["y"])], axis=1
         ).dropna()
+
         data.set_index(data.columns[0], inplace=True)
 
         return data
