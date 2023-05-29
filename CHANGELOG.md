@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.3.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.2.0...v2.3.0) (2023-05-29)
+
+
+### Bug Fixes
+
+* **imu:** change the way angles are computed ([62ed6c2](https://github.com/FlorentinTh/MyoRatio-API/commit/62ed6c27db686dc1c070724483167cdc48766b4b))
+
 ## [2.2.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.0.0...v2.2.0) (2023-05-20)
 
 ## [2.0.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v1.2.0...v2.0.0) (2023-05-09)
