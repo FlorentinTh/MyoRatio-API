@@ -417,13 +417,14 @@ class Report:
                     {"position": "bottom", "border": {"color": "black"}}
                 )
 
-                muscle_chart.add_series(
-                    {
-                        "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
-                        "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        "values": f"=data!${xl_col_to_name(antagonist_index)}$2:${xl_col_to_name(antagonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                    }
-                )
+                if self._analysis == Analysis.FLEXION.value:
+                    muscle_chart.add_series(
+                        {
+                            "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
+                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
+                            "values": f"=data!${xl_col_to_name(antagonist_index)}$2:${xl_col_to_name(antagonist_index)}${NormalizationOptions.LENGTH.value + 1}",
+                        }
+                    )
 
                 muscle_chart.add_series(
                     {
@@ -432,6 +433,15 @@ class Report:
                         "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
                     }
                 )
+
+                if self._analysis != Analysis.FLEXION.value:
+                    muscle_chart.add_series(
+                        {
+                            "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
+                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
+                            "values": f"=data!${xl_col_to_name(antagonist_index)}$2:${xl_col_to_name(antagonist_index)}${NormalizationOptions.LENGTH.value + 1}",
+                        }
+                    )
 
                 angle_chart = self._workbook.add_chart({"type": "line"})
 
