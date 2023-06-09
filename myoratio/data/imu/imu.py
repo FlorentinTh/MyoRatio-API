@@ -144,6 +144,10 @@ class IMU(_Data):
 
         angle_data = self._compute_angle(resampled_acc_data)
 
+        angle_data = angle_data.drop(
+            angle_data.tail(round(Frequencies.EMG_TRIG.value / 4)).index
+        )
+
         reduced_angle_data = self._reduce_angle_data(angle_data)
 
         self._write_angles(reduced_angle_data, "JSON", prefix="small")
