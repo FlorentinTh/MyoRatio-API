@@ -405,7 +405,7 @@ class Report:
                 if chart_type == ChartType.AREA.value:
                     chart_options = {
                         "type": "area",
-                        "subtype": "stacked",
+                        "subtype": None,
                         "border": {"color": "black"},
                     }
                 else:
