@@ -59,18 +59,21 @@ class IMU(_Data):
                         [180 * (math.atan(-accelerometer_y[i] / pitch) / math.pi)]
                     )
             else:
-                angle_z.extend(
-                    [
-                        90
-                        - (
-                            180
-                            * (
-                                math.atan(accelerometer_x[i] / abs(accelerometer_y[i]))
-                                / math.pi
+                if abs(accelerometer_y[i]) != 0.0:
+                    angle_z.extend(
+                        [
+                            90
+                            - (
+                                180
+                                * (
+                                    math.atan(
+                                        accelerometer_x[i] / abs(accelerometer_y[i])
+                                    )
+                                    / math.pi
+                                )
                             )
-                        )
-                    ]
-                )
+                        ]
+                    )
 
         emg_trig_data = self._get_column_data(Column.EMG_TRIG.value)
 
