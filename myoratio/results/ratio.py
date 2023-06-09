@@ -12,8 +12,14 @@ class Ratio:
         antagonist = None
         agonist = None
 
-        if self._analysis == Analysis.EXTENSION.value:
+        if (
+            self._analysis == Analysis.EXTENSION.value
+            or self._analysis == Analysis.FLEXION.value
+            or self._analysis == Analysis.SIT_STAND.value
+        ):
             antagonist = "BICEPS FEMORIS"
             agonist = "RECTUS FEMORIS"
+        else:
+            raise ValueError(f"Muscles for analysis {self._analysis} are not defined")
 
         return antagonist, agonist
