@@ -4,7 +4,7 @@ from typing import Optional
 
 import pandas as pd
 
-from myoratio.task import Analysis
+from myoratio.task import Analysis, Stage
 
 
 class Results:
@@ -29,7 +29,7 @@ class Results:
         except pd.errors.ParserError as error:
             raise pd.errors.ParserError(error)
 
-    def compute_ratios(self) -> dict:
+    def compute_ratios(self, stage: str) -> dict:
         ratios = {"nb_iteration": len(self._areas) - 1}
 
         for area in self._areas.keys():
@@ -47,9 +47,15 @@ class Results:
                         if "muscle" in item and item["muscle"] == muscles[i]:
                             exists = item
 
-                    if self._analysis == Analysis.EXTENSION.value:
+                    if self._analysis == Analysis.EXTENSION.value or (
+                        self._analysis == Analysis.SIT_STAND.value
+                        and stage == Stage.CONCENTRIC.value
+                    ):
                         ratio = areas[i] / areas[j]
-                    elif self._analysis == Analysis.FLEXION.value:
+                    elif self._analysis == Analysis.FLEXION.value or (
+                        self._analysis == Analysis.SIT_STAND.value
+                        and stage == Stage.ECCENTRIC.value
+                    ):
                         ratio = 1 / (areas[i] / areas[j])
                     else:
                         raise ReferenceError("Analysis parameter is not valid")

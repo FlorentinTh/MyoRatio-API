@@ -64,7 +64,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
                 }
 
             try:
-                ratios = results.compute_ratios()
+                ratios = results.compute_ratios(body["stage"])
             except Exception as error:
                 return {
                     "code": 500,
