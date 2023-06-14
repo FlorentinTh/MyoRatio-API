@@ -40,25 +40,28 @@ class Results:
             areas = list(self._areas[area].values())
 
             for i in range(len(muscles)):
-                for j in range(i + 1):
+                if stage == Stage.CONCENTRIC.value:
+                    range_start = 0
+                    range_stop = i + 1
+                elif stage == Stage.ECCENTRIC.value:
+                    range_start = i
+                    range_stop = len(muscles)
+                else:
+                    raise ReferenceError("Stage parameter is not valid")
+
+                for j in range(range_start, range_stop):
                     exists = None
 
                     for item in ratios[area]:  # type: ignore
                         if "muscle" in item and item["muscle"] == muscles[i]:
                             exists = item
 
-                    if self._analysis == Analysis.EXTENSION.value or (
-                        self._analysis == Analysis.SIT_STAND.value
-                        and stage == Stage.CONCENTRIC.value
-                    ):
+                    if stage == Stage.CONCENTRIC.value:
                         ratio = areas[i] / areas[j]
-                    elif self._analysis == Analysis.FLEXION.value or (
-                        self._analysis == Analysis.SIT_STAND.value
-                        and stage == Stage.ECCENTRIC.value
-                    ):
+                    elif stage == Stage.ECCENTRIC.value:
                         ratio = 1 / (areas[i] / areas[j])
                     else:
-                        raise ReferenceError("Analysis parameter is not valid")
+                        raise ReferenceError("Stage parameter is not valid")
 
                     if ratio == 1:
                         ratio = int(ratio)

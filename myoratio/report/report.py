@@ -41,8 +41,16 @@ class Report:
         else:
             raise ValueError(f"Expected a value from Stage, but got {stage}")
 
+        stage_folder_name = self._stage
+
+        if self._analysis == Analysis.SIT_STAND.value:
+            if self._stage == Stage.CONCENTRIC.value:
+                stage_folder_name = "standing"
+            else:
+                stage_folder_name = "sitting"
+
         output_base_path = os.path.join(
-            self._data_path, "Results", self._analysis, self._stage
+            self._data_path, "Results", self._analysis, stage_folder_name
         )
 
         self._participant = participant
@@ -50,7 +58,7 @@ class Report:
         self._workbook = xlsxwriter.Workbook(
             os.path.join(
                 output_base_path,
-                f"report_{self._analysis}_{self._stage}_{self._participant[0]}.xlsx",
+                f"report_{self._analysis}_{stage_folder_name}_{self._participant[0]}.xlsx",
             )
         )
 
@@ -193,7 +201,7 @@ class Report:
                 1, i + 1, mean_envelopes[column], self._formats["sci_number"]
             )
 
-        mean_angles = angles.get_mean_angles_data()
+        mean_angles = angles.get_mean_angles_data(self._stage)
         self._data_worksheet.write_column(
             1,
             len(mean_envelopes.columns) + 1,
@@ -275,7 +283,7 @@ class Report:
 
         start_row = start_at_row
 
-        ratio = Ratio(self._analysis)
+        ratio = Ratio(self._analysis, self._stage)
         antagonist, agonist = ratio.get_muscles()
 
         ratios_of_interest = []
@@ -291,16 +299,19 @@ class Report:
 
             self._report_worksheet.write(start_row + 1, 0, label, self._formats["bold"])
 
+            antagonist_column = None
             agonist_column = None
 
             for j, row in ratios.iterrows():
                 if agonist is not None and antagonist is not None:
-                    if agonist_column is None:
-                        if StringHelper.include_substring(row[i]["muscle"], agonist):
-                            agonist_column = j + 2  # type: ignore
-                    else:
+                    if antagonist_column is None or agonist_column is None:
                         if StringHelper.include_substring(row[i]["muscle"], antagonist):
-                            ratios_of_interest.append((agonist_column, start_row + j + 2))  # type: ignore
+                            antagonist_column = j + 2  # type: ignore
+
+                        if StringHelper.include_substring(row[i]["muscle"], agonist):
+                            agonist_column = start_row + j + 2  # type: ignore
+                else:
+                    raise ValueError("antagonist and agonist cannot be None")
 
                 self._report_worksheet.write(
                     start_row + j + 2, 1, row[i]["muscle"], self._formats["bold"]  # type: ignore
@@ -314,6 +325,11 @@ class Report:
                     start_row + j + 2, 2, row[i]["values"], self._formats["number_short"]  # type: ignore
                 )
 
+            if antagonist_column is not None and agonist_column is not None:
+                ratios_of_interest.append((antagonist_column, agonist_column))  # type: ignore
+            else:
+                raise ValueError("antagonist_column and agonist_column cannot be None")
+
             start_row += len(ratios) + 2
 
         return start_row, ratios_of_interest
@@ -324,7 +340,7 @@ class Report:
         antagonist = None
         agonist = None
 
-        ratio = Ratio(self._analysis)
+        ratio = Ratio(self._analysis, self._stage)
         antagonist, agonist = ratio.get_muscles()
 
         self._report_worksheet.write(
@@ -387,7 +403,7 @@ class Report:
             raise ValueError(f"Expected a value from ChartType, but got {chart_type}")
 
         if self._data_headings is not None:
-            ratio = Ratio(self._analysis)
+            ratio = Ratio(self._analysis, self._stage)
             antagonist, agonist = ratio.get_muscles()
 
             antagonist_index = None
@@ -417,7 +433,13 @@ class Report:
                     {"position": "bottom", "border": {"color": "black"}}
                 )
 
-                if self._analysis == Analysis.FLEXION.value:
+                if (
+                    self._stage == Stage.CONCENTRIC.value
+                    and self._analysis != Analysis.FLEXION.value
+                ) or (
+                    self._stage == Stage.ECCENTRIC.value
+                    and self._analysis == Analysis.FLEXION.value
+                ):
                     muscle_chart.add_series(
                         {
                             "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
@@ -426,15 +448,22 @@ class Report:
                         }
                     )
 
-                muscle_chart.add_series(
-                    {
-                        "name": f"=data!${xl_col_to_name(agonist_index)}$1",
-                        "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                    }
-                )
+                    muscle_chart.add_series(
+                        {
+                            "name": f"=data!${xl_col_to_name(agonist_index)}$1",
+                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
+                            "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
+                        }
+                    )
+                else:
+                    muscle_chart.add_series(
+                        {
+                            "name": f"=data!${xl_col_to_name(agonist_index)}$1",
+                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
+                            "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
+                        }
+                    )
 
-                if self._analysis != Analysis.FLEXION.value:
                     muscle_chart.add_series(
                         {
                             "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
