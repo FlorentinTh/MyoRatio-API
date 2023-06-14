@@ -24,8 +24,8 @@ class Angles:
         mean_angles.set_index(mean_angles.columns[0], inplace=True)
         return mean_angles
 
-    def _write_mean_angles(self, data: pd.DataFrame) -> None:
-        csv_output_filename = f"angles.csv"
+    def _write_mean_angles(self, data: pd.DataFrame, stage: str) -> None:
+        csv_output_filename = f"angles_{stage}.csv"
         csv_file_output_path = os.path.join(self._data_path, csv_output_filename)
         data.to_csv(csv_file_output_path, sep="\t", encoding="utf-8")
 
@@ -42,8 +42,8 @@ class Angles:
         except pd.errors.ParserError as error:
             raise pd.errors.ParserError(error)
 
-    def get_mean_angles_data(self) -> pd.DataFrame:
-        csv_angles_file_path = os.path.join(self._data_path, "angles.csv")
+    def get_mean_angles_data(self, stage: str) -> pd.DataFrame:
+        csv_angles_file_path = os.path.join(self._data_path, f"angles_{stage}.csv")
 
         try:
             return pd.read_csv(
@@ -89,7 +89,7 @@ class Angles:
 
         return points_values
 
-    def start_processing(self, csv_files: list[str]) -> None:
+    def start_processing(self, csv_files: list[str], stage: str) -> None:
         dataframes = []
 
         for csv_file in csv_files:
@@ -101,4 +101,4 @@ class Angles:
                 raise pd.errors.ParserError(error)
 
         mean_angles = self._compute_mean_angles(dataframes)
-        self._write_mean_angles(mean_angles)
+        self._write_mean_angles(mean_angles, stage)

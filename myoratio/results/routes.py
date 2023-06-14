@@ -45,10 +45,12 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
             try:
                 angles = Angles(data_path)
 
-                csv_files = glob(os.path.join(data_path, f"normalized_angles_*.csv"))
+                csv_files = glob(
+                    os.path.join(data_path, f'normalized_angle_{body["stage"]}_*.csv')
+                )
 
                 if len(csv_files) > 0:
-                    angles.start_processing(csv_files)
+                    angles.start_processing(csv_files, body["stage"])
                 else:
                     return {
                         "code": 404,
