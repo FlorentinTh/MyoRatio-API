@@ -242,4 +242,4 @@ class EMG(_Data):
             columns=angles_between_points_data.columns,
         )
 
-        self._write_csv_data_file(normalized_angles_data, prefix="normalized_angles")
+        self._write_csv_data_file(normalized_angles_data, prefix="normalized_angle")
