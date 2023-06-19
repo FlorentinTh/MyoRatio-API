@@ -130,7 +130,7 @@ class Report:
                 f"F{i + 2}", metadata_angle["1"]["y"], self._formats["number"]
             )
             self._report_worksheet.write_formula(
-                f"G{i + 2}", f"=E{i + 2}-F{i + 2}", self._formats["number"]
+                f"G{i + 2}", f"=ABS(E{i + 2}-F{i + 2})", self._formats["number"]
             )
             self._report_worksheet.write_formula(
                 f"H{i + 2}", f"=G{i + 2}/D{i + 2}", self._formats["number"]
@@ -305,10 +305,10 @@ class Report:
             for j, row in ratios.iterrows():
                 if agonist is not None and antagonist is not None:
                     if antagonist_column is None or agonist_column is None:
-                        if StringHelper.include_substring(row[i]["muscle"], antagonist):
+                        if StringHelper.include_substring(row[i]["muscle"], agonist):
                             antagonist_column = j + 2  # type: ignore
 
-                        if StringHelper.include_substring(row[i]["muscle"], agonist):
+                        if StringHelper.include_substring(row[i]["muscle"], antagonist):
                             agonist_column = start_row + j + 2  # type: ignore
                 else:
                     raise ValueError("antagonist and agonist cannot be None")
@@ -398,6 +398,13 @@ class Report:
             self._formats["number"],
         )
 
+    def _getChartSerieOptionByMuscle(self, muscle_index: int, time_index: int) -> dict:
+        return {
+            "name": f"=data!${xl_col_to_name(muscle_index)}$1",
+            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
+            "values": f"=data!${xl_col_to_name(muscle_index)}$2:${xl_col_to_name(muscle_index)}${NormalizationOptions.LENGTH.value + 1}",
+        }
+
     def _insert_chart(self, chart_type: str, offset: int) -> None:
         if chart_type not in [chart_type.value for chart_type in ChartType]:
             raise ValueError(f"Expected a value from ChartType, but got {chart_type}")
@@ -433,44 +440,27 @@ class Report:
                     {"position": "bottom", "border": {"color": "black"}}
                 )
 
-                if (
-                    self._stage == Stage.CONCENTRIC.value
-                    and self._analysis != Analysis.FLEXION.value
-                ) or (
-                    self._stage == Stage.ECCENTRIC.value
-                    and self._analysis == Analysis.FLEXION.value
-                ):
-                    muscle_chart.add_series(
-                        {
-                            "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
-                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                            "values": f"=data!${xl_col_to_name(antagonist_index)}$2:${xl_col_to_name(antagonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        }
-                    )
-
-                    muscle_chart.add_series(
-                        {
-                            "name": f"=data!${xl_col_to_name(agonist_index)}$1",
-                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                            "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        }
-                    )
+                if antagonist_index is not None and agonist_index is not None:
+                    if self._stage == Stage.CONCENTRIC.value:
+                        muscle_chart.add_series(
+                            self._getChartSerieOptionByMuscle(agonist_index, time_index)
+                        )
+                        muscle_chart.add_series(
+                            self._getChartSerieOptionByMuscle(
+                                antagonist_index, time_index
+                            )
+                        )
+                    else:
+                        muscle_chart.add_series(
+                            self._getChartSerieOptionByMuscle(
+                                antagonist_index, time_index
+                            )
+                        )
+                        muscle_chart.add_series(
+                            self._getChartSerieOptionByMuscle(agonist_index, time_index)
+                        )
                 else:
-                    muscle_chart.add_series(
-                        {
-                            "name": f"=data!${xl_col_to_name(agonist_index)}$1",
-                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                            "values": f"=data!${xl_col_to_name(agonist_index)}$2:${xl_col_to_name(agonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        }
-                    )
-
-                    muscle_chart.add_series(
-                        {
-                            "name": f"=data!${xl_col_to_name(antagonist_index)}$1",
-                            "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
-                            "values": f"=data!${xl_col_to_name(antagonist_index)}$2:${xl_col_to_name(antagonist_index)}${NormalizationOptions.LENGTH.value + 1}",
-                        }
-                    )
+                    raise ValueError(f"Muscle indexes cannot be None")
 
                 angle_chart = self._workbook.add_chart({"type": "line"})
 

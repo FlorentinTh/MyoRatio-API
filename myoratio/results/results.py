@@ -41,13 +41,19 @@ class Results:
 
             for i in range(len(muscles)):
                 if stage == Stage.CONCENTRIC.value:
-                    range_start = 0
-                    range_stop = i + 1
-                elif stage == Stage.ECCENTRIC.value:
-                    range_start = i
-                    range_stop = len(muscles)
+                    if self._analysis == Analysis.FLEXION.value:
+                        range_start = i
+                        range_stop = len(muscles)
+                    else:
+                        range_start = 0
+                        range_stop = i + 1
                 else:
-                    raise ReferenceError("Stage parameter is not valid")
+                    if self._analysis == Analysis.FLEXION.value:
+                        range_start = 0
+                        range_stop = i + 1
+                    else:
+                        range_start = i
+                        range_stop = len(muscles)
 
                 for j in range(range_start, range_stop):
                     exists = None
@@ -56,12 +62,7 @@ class Results:
                         if "muscle" in item and item["muscle"] == muscles[i]:
                             exists = item
 
-                    if stage == Stage.CONCENTRIC.value:
-                        ratio = areas[i] / areas[j]
-                    elif stage == Stage.ECCENTRIC.value:
-                        ratio = 1 / (areas[i] / areas[j])
-                    else:
-                        raise ReferenceError("Stage parameter is not valid")
+                    ratio = areas[i] / areas[j]
 
                     if ratio == 1:
                         ratio = int(ratio)

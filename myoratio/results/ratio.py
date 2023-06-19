@@ -29,19 +29,19 @@ class Ratio:
         antagonist = None
         agonist = None
 
-        if (
-            self._analysis == Analysis.EXTENSION.value
-            or self._analysis == Analysis.FLEXION.value
-            or self._analysis == Analysis.SIT_STAND.value
-        ):
-            if self._stage == Stage.CONCENTRIC.value:
+        if self._stage == Stage.CONCENTRIC.value:
+            if self._analysis == Analysis.FLEXION.value:
                 antagonist = Muscles.RECTUS_FEMORIS.value
                 agonist = Muscles.BICEPS_FEMORIS.value
             else:
                 antagonist = Muscles.BICEPS_FEMORIS.value
                 agonist = Muscles.RECTUS_FEMORIS.value
-
         else:
-            raise ValueError(f"Muscles for analysis {self._analysis} are not defined")
+            if self._analysis == Analysis.FLEXION.value:
+                antagonist = Muscles.BICEPS_FEMORIS.value
+                agonist = Muscles.RECTUS_FEMORIS.value
+            else:
+                antagonist = Muscles.RECTUS_FEMORIS.value
+                agonist = Muscles.BICEPS_FEMORIS.value
 
         return antagonist, agonist
