@@ -2,6 +2,33 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.4.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.3.0...v2.4.0) (2023-06-19)
+
+
+### ⚠ BREAKING CHANGES
+
+* **results:** 
+* **emg:** 
+
+### Features
+
+* **imu:** remove unrelated data when sensor is cut ([caa5e61](https://github.com/FlorentinTh/MyoRatio-API/commit/caa5e61c483a0e7a50cd0b833171865648b1040a))
+* **ratio:** add enum for all muscles that may be part of the ratio computation ([acf57cf](https://github.com/FlorentinTh/MyoRatio-API/commit/acf57cfd0373b93333e0b0e6a68264fb3f0f0acd))
+* **results:** add sit-stand analysis computation of ratios ([4c1135a](https://github.com/FlorentinTh/MyoRatio-API/commit/4c1135a927d8b5d5db97a11a8bcc0ad0e549dbd1))
+
+
+### Bug Fixes
+
+* **imu:** add missing check on by 0 division ([43c7f53](https://github.com/FlorentinTh/MyoRatio-API/commit/43c7f538cb9e099d9883aede3e7e0ce0d0a62587))
+* **ratio:** add missing analysis muscles combinations ([5f424cf](https://github.com/FlorentinTh/MyoRatio-API/commit/5f424cf6f4f4995e5213b74cb03d6f95c69e85e4))
+* **report:** fix issue with area charts generation ([faa5043](https://github.com/FlorentinTh/MyoRatio-API/commit/faa50433d3f574862ef984febc8b2863eeb7548f))
+* **report:** remove area chart stacked subtype ([ba00d07](https://github.com/FlorentinTh/MyoRatio-API/commit/ba00d076e3f7eadd6aac3653356697a733d698e8))
+* **results:** fix an issue with stage switching computing wrong angle for the report ([4b3323a](https://github.com/FlorentinTh/MyoRatio-API/commit/4b3323a962e1c538463a5541d06238c754ad4251))
+* **results:** revised version of the generation of the results given the analysis and stage ([1b37cd7](https://github.com/FlorentinTh/MyoRatio-API/commit/1b37cd7d894ff1d8a24e8e33bb80346a816c4e4c))
+
+
+* **emg:** update normalized angles data output file name to match naming convention ([9bb6ab7](https://github.com/FlorentinTh/MyoRatio-API/commit/9bb6ab76f7a363efa9f28d8944008ccc6de4274c))
+
 ## [2.3.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.2.0...v2.3.0) (2023-05-29)
 
 
