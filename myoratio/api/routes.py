@@ -1,4 +1,4 @@
-from flask import Blueprint, Response, request
+from flask import Blueprint, Response
 
 from .api import API, ResponseStatus
 
