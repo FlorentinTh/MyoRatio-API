@@ -9,6 +9,7 @@ from myoratio.api.auth import auth
 from myoratio.api.helpers import JSONHelper, PathHelper
 
 from .report import Report
+from .summary import Summary
 
 report_blueprint = Blueprint("report_blueprint", __name__)
 
@@ -19,7 +20,6 @@ def parallel_xlsx_report_generator(
 ) -> Optional[dict]:
     try:
         report = Report(body["data_path"], body["analysis"], body["stage"], participant)
-
         report.generate_XLSX_report()
     except Exception as error:
         return {
@@ -75,6 +75,44 @@ def generate_xlsx_report() -> tuple[Response, int]:
                 )
 
         # deepcode ignore XSS: already sanitized
+        return API.success_response(
+            201,
+            ResponseStatus.CREATED.value,
+            {
+                "data_path": body["data_path"],
+                "analysis": body["analysis"],
+            },
+        )
+
+
+@report_blueprint.route("/summary", methods=["POST"])
+@auth.login_required
+def generate_xlsx_summary() -> tuple[Response, int]:
+    body = request.json
+
+    if body is None:
+        return API.error_response(
+            400, f"Request body is not properly formatted", "request body is empty"
+        )
+
+    else:
+        schema = {"data_path": str, "analysis": str, "stage": str}
+
+        validation = API.validate_request_body(body, schema)
+
+        if validation is not None:
+            return API.error_response(
+                400, f"Request body is not properly formatted", validation
+            )
+
+        try:
+            summary = Summary(body["data_path"], body["analysis"], body["stage"])
+            summary.generate_XLSX_summary()
+        except Exception as error:
+            return API.error_response(
+                500, f"Error occurs while trying to generate XLSX summary", str(error)
+            )
+
         return API.success_response(
             201,
             ResponseStatus.CREATED.value,
