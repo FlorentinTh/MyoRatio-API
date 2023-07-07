@@ -25,7 +25,7 @@ class Ratio:
         else:
             raise ValueError(f"Expected a value from Stage, but got {stage}")
 
-    def get_muscles(self) -> tuple[str | None, str | None]:
+    def get_muscles(self) -> tuple[str, str]:
         antagonist = None
         agonist = None
 
@@ -43,5 +43,8 @@ class Ratio:
             else:
                 antagonist = Muscles.RECTUS_FEMORIS.value
                 agonist = Muscles.BICEPS_FEMORIS.value
+
+        if antagonist is None and agonist is None:
+            raise ValueError(f"Muscles cannot be determined")
 
         return antagonist, agonist
