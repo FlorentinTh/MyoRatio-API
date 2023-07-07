@@ -215,12 +215,19 @@ class Summary:
             self._stage,
         )
 
-        report_files = sorted(os.listdir(input_path), key=lambda x: int(x.split("_")[-2]))
+        report_files = os.listdir(input_path)
+
+        if len(report_files) <= 0:
+            raise FileNotFoundError(f"Path {input_path} does not contain any reports")
+
+        sorted_report_files = sorted(
+            os.listdir(input_path), key=lambda x: int(x.split("_")[-2])
+        )
         participtant_type_processed = []
 
         current_row = 0
 
-        for report_file in report_files:
+        for report_file in sorted_report_files:
             participant_type = os.path.splitext(report_file)[0][-1].lower()
 
             if participant_type not in participtant_type_processed:
