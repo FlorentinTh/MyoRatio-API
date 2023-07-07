@@ -7,7 +7,7 @@ from xlsxwriter.utility import xl_col_to_name
 
 from myoratio.angles import Angles
 from myoratio.api import Constants
-from myoratio.api.helpers import PathHelper, StringHelper
+from myoratio.api.helpers import PathHelper, StringHelper, XLSXHelper
 from myoratio.areas import Areas
 from myoratio.data.emg import EMG, NormalizationOptions
 from myoratio.results import Ratio, Results
@@ -66,23 +66,7 @@ class Report:
         self._report_worksheet = self._workbook.add_worksheet("report")
         self._chart_worksheet = self._workbook.add_worksheet("chart")
 
-        bold = self._workbook.add_format({"bold": True})
-        header = self._workbook.add_format({"bold": True})
-        header.set_align("center")
-        number = self._workbook.add_format({"num_format": "0.000000"})
-        number.set_align("center")
-        number_short = self._workbook.add_format({"num_format": "0.00"})
-        number_short.set_align("center")
-        sci_number = self._workbook.add_format({"num_format": "##0.000E+00"})
-        sci_number.set_align("center")
-
-        self._formats = {
-            "bold": bold,
-            "header": header,
-            "number": number,
-            "number_short": number_short,
-            "sci_number": sci_number,
-        }
+        self._formats = XLSXHelper.get_cell_formats(self._workbook)
 
     def _write_stats_table(
         self, start_at_row: int, metadata_angles: list[dict[str, dict[str, float]]]
@@ -303,15 +287,13 @@ class Report:
             agonist_column = None
 
             for j, row in ratios.iterrows():
-                if agonist is not None and antagonist is not None:
-                    if antagonist_column is None or agonist_column is None:
-                        if StringHelper.include_substring(row[i]["muscle"], agonist):
-                            antagonist_column = j + 2  # type: ignore
+                if antagonist_column is None or agonist_column is None:
+                    if StringHelper.include_substring(row[i]["muscle"], agonist):
+                        antagonist_column = j + 2  # type: ignore
 
-                        if StringHelper.include_substring(row[i]["muscle"], antagonist):
-                            agonist_column = start_row + j + 2  # type: ignore
-                else:
-                    raise ValueError("antagonist and agonist cannot be None")
+                    if StringHelper.include_substring(row[i]["muscle"], antagonist):
+                        agonist_column = start_row + j + 2  # type: ignore
+
 
                 self._report_worksheet.write(
                     start_row + j + 2, 1, row[i]["muscle"], self._formats["bold"]  # type: ignore
