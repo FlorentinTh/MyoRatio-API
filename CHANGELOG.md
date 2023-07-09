@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.5.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.4.0...v2.5.0) (2023-07-09)
+
+
+### Features
+
+* **summary:** add report summary feature ([869c6c6](https://github.com/FlorentinTh/MyoRatio-API/commit/869c6c65cd2096769d75c28a5dca80ca4639a6d1))
+* **xlsx_helper:** move xlsx formats defined in report to a dedicated helper ([b075207](https://github.com/FlorentinTh/MyoRatio-API/commit/b075207a8d59fb8e7ccb783128f85ffad473cbac))
+
+
+### Bug Fixes
+
+* **ratio:** add verification on tuple muscles return type ([99b3f23](https://github.com/FlorentinTh/MyoRatio-API/commit/99b3f23edd008c484720cd2b95e483e319bf29ba))
+* **summary:** add an error handler when there are no report files ([89a6d97](https://github.com/FlorentinTh/MyoRatio-API/commit/89a6d97db2440e2b8509579ff97c7da697f2b04f))
+
 ## [2.4.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.3.0...v2.4.0) (2023-06-19)
 
 
