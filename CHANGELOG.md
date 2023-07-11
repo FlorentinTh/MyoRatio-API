@@ -21,8 +21,8 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### ⚠ BREAKING CHANGES
 
-* **results:** 
-* **emg:** 
+* **results:**
+* **emg:**
 
 ### Features
 

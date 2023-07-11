@@ -294,7 +294,6 @@ class Report:
                     if StringHelper.include_substring(row[i]["muscle"], antagonist):
                         agonist_column = start_row + j + 2  # type: ignore
 
-
                 self._report_worksheet.write(
                     start_row + j + 2, 1, row[i]["muscle"], self._formats["bold"]  # type: ignore
                 )
