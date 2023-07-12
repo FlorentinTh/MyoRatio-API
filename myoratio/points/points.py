@@ -28,7 +28,7 @@ class Points:
         if self._dataframe is not None:
             dataframe_length = len(self._dataframe)
         else:
-            raise ValueError(f"class Points was not properly initialized")
+            raise ValueError("class Points was not properly initialized")
 
         if self._stage == Stage.CONCENTRIC.value:
             point_1x_index = random.randint(
@@ -71,7 +71,7 @@ class Points:
 
     def _points_retrieval(self) -> list[dict[str, float]]:
         if self._dataframe is None:
-            raise ValueError(f"class Points was not properly initialized")
+            raise ValueError("class Points was not properly initialized")
 
         window_size = 10
         rolling_values = self._dataframe["y"].rolling(window_size, min_periods=1).mean()

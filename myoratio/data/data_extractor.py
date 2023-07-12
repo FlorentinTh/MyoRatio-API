@@ -23,5 +23,7 @@ class DataExtractor:
 
     def extract_data(self) -> pd.DataFrame:
         points = self._get_point_index()
-        all_data_between_points = self._data.iloc[points["x"] : points["y"], :]
+        all_data_between_points = self._data.iloc[
+            points["x"] : points["y"], :  # noqa: E203
+        ]  # noqa: E203
         return all_data_between_points.drop(all_data_between_points.columns[0], axis=1)

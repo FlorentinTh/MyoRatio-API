@@ -26,7 +26,7 @@ class Resample:
                     self._high_frequency / self._low_frequency
                 ).limit_denominator(1000)
             else:
-                raise ValueError(f"class Resample was not properly initialized")
+                raise ValueError("class Resample was not properly initialized")
 
             return signal.resample_poly(
                 self._data, frequency_fraction.numerator, frequency_fraction.denominator

@@ -1,1 +1,1 @@
-from .resample import Resample
+from .resample import Resample  # noqa: F401

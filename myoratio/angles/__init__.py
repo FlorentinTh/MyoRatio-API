@@ -1,1 +1,1 @@
-from .angles import Angles
+from .angles import Angles  # noqa: F401

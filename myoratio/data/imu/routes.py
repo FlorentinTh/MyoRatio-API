@@ -88,7 +88,7 @@ def generate_imu_analysis() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -103,7 +103,7 @@ def generate_imu_analysis() -> tuple[Response, int]:
         if validation is not None:
             # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         participants = []

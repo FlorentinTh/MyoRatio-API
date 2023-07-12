@@ -20,7 +20,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -40,7 +40,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
         if validation is not None:
             # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         data_path = os.path.join(
@@ -84,7 +84,7 @@ def generate_emg_analysis() -> tuple[Response, int]:
                 )
             except Exception as error:
                 return API.error_response(
-                    500, f"Error occurs while trying to process EMG data", str(error)
+                    500, "Error occurs while trying to process EMG data", str(error)
                 )
 
         else:

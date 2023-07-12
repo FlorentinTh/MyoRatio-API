@@ -34,7 +34,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
         except pd_errors.ParserError as error:
             return {
                 "code": 500,
-                "message": f"Error occurs while trying to read CSV files",
+                "message": "Error occurs while trying to read CSV files",
                 "details": str(error),
             }
 
@@ -61,7 +61,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
             except Exception as error:
                 return {
                     "code": 500,
-                    "message": f"Error occurs while trying to compute mean angles",
+                    "message": "Error occurs while trying to compute mean angles",
                     "details": str(error),
                 }
 
@@ -70,7 +70,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
             except Exception as error:
                 return {
                     "code": 500,
-                    "message": f"Error occurs while trying to compute ratios",
+                    "message": "Error occurs while trying to compute ratios",
                     "details": str(error),
                 }
 
@@ -79,7 +79,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
         except Exception as error:
             return {
                 "code": 500,
-                "message": f"Error occurs while trying to process areas",
+                "message": "Error occurs while trying to process areas",
                 "details": str(error),
             }
 
@@ -98,7 +98,7 @@ def generate_results() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -109,7 +109,7 @@ def generate_results() -> tuple[Response, int]:
         if validation is not None:
             # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         participants = []

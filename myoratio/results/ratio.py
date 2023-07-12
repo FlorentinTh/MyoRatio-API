@@ -45,6 +45,6 @@ class Ratio:
                 agonist = Muscles.BICEPS_FEMORIS.value
 
         if antagonist is None and agonist is None:
-            raise ValueError(f"Muscles cannot be determined")
+            raise ValueError("Muscles cannot be determined")
 
         return antagonist, agonist

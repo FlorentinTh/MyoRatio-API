@@ -4,9 +4,9 @@ import matplotlib
 import pandas as pd
 
 matplotlib.use("SVG")
-from matplotlib import pyplot as plt
+from matplotlib import pyplot as plt  # noqa: E402
 
-from .path_helper import PathHelper
+from .path_helper import PathHelper  # noqa: E402
 
 
 class PlotHelper:

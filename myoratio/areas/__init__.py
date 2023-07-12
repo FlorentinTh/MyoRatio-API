@@ -1,1 +1,1 @@
-from .areas import Areas
+from .areas import Areas  # noqa: F401

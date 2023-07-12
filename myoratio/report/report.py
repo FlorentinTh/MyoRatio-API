@@ -325,7 +325,7 @@ class Report:
         antagonist, agonist = ratio.get_muscles()
 
         self._report_worksheet.write(
-            start_row, 0, f"Antagonist / Agonist Ratios", self._formats["bold"]
+            start_row, 0, "Antagonist / Agonist Ratios", self._formats["bold"]
         )
 
         self._report_worksheet.write(
@@ -441,7 +441,7 @@ class Report:
                             self._getChartSerieOptionByMuscle(agonist_index, time_index)
                         )
                 else:
-                    raise ValueError(f"Muscle indexes cannot be None")
+                    raise ValueError("Muscle indexes cannot be None")
 
                 angle_chart = self._workbook.add_chart({"type": "line"})
 

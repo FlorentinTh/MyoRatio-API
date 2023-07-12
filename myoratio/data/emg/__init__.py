@@ -1,1 +1,1 @@
-from .emg import EMG, NormalizationOptions
+from .emg import EMG, NormalizationOptions  # noqa: F401

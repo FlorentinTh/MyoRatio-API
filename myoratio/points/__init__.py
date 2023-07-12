@@ -1,1 +1,1 @@
-from .points import Points
+from .points import Points  # noqa: F401

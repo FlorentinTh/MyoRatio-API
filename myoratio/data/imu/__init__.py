@@ -1,1 +1,1 @@
-from .imu import IMU
+from .imu import IMU  # noqa: F401

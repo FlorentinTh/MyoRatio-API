@@ -19,7 +19,7 @@ def get_points_automatically() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -36,7 +36,7 @@ def get_points_automatically() -> tuple[Response, int]:
         if validation is not None:
             # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         data_path = os.path.join(
@@ -54,7 +54,7 @@ def get_points_automatically() -> tuple[Response, int]:
         except Exception as error:
             return API.error_response(
                 500,
-                f"Error occurs while trying to retrieve points automatically",
+                "Error occurs while trying to retrieve points automatically",
                 str(error),
             )
 

@@ -24,7 +24,7 @@ def parallel_xlsx_report_generator(
     except Exception as error:
         return {
             "code": 500,
-            "message": f"Error occurs while trying to generate XLSX report",
+            "message": "Error occurs while trying to generate XLSX report",
             "details": str(error),
         }
 
@@ -36,7 +36,7 @@ def generate_xlsx_report() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -47,7 +47,7 @@ def generate_xlsx_report() -> tuple[Response, int]:
         if validation is not None:
             # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         participants = []
@@ -92,7 +92,7 @@ def generate_xlsx_summary() -> tuple[Response, int]:
 
     if body is None:
         return API.error_response(
-            400, f"Request body is not properly formatted", "request body is empty"
+            400, "Request body is not properly formatted", "request body is empty"
         )
 
     else:
@@ -101,8 +101,9 @@ def generate_xlsx_summary() -> tuple[Response, int]:
         validation = API.validate_request_body(body, schema)
 
         if validation is not None:
+            # deepcode ignore XSS: already sanitized
             return API.error_response(
-                400, f"Request body is not properly formatted", validation
+                400, "Request body is not properly formatted", validation
             )
 
         try:
@@ -110,9 +111,10 @@ def generate_xlsx_summary() -> tuple[Response, int]:
             summary.generate_XLSX_summary()
         except Exception as error:
             return API.error_response(
-                500, f"Error occurs while trying to generate XLSX summary", str(error)
+                500, "Error occurs while trying to generate XLSX summary", str(error)
             )
 
+        # deepcode ignore XSS: already sanitized
         return API.success_response(
             201,
             ResponseStatus.CREATED.value,

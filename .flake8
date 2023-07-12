@@ -1,0 +1,8 @@
+[flake8]
+extend-ignore = E501,C901
+max-complexity = 10
+exclude =
+    __pycache__,
+    .env,
+    .git,
+    .venv

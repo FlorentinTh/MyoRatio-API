@@ -75,7 +75,7 @@ class EMG(_Data):
 
             return data_mean_all_emg_removed
         else:
-            raise ValueError(f"class EMG object was not properly initialized")
+            raise ValueError("class EMG object was not properly initialized")
 
     def _filter_all_emg_data(
         self, removed_mean_all_emg_data: pd.DataFrame
@@ -108,7 +108,7 @@ class EMG(_Data):
                 [self._emg_trig_time, all_emg_filtered_data], axis=1
             )
         else:
-            raise ValueError(f"class EMG object was not properly initialized")
+            raise ValueError("class EMG object was not properly initialized")
 
         all_emg_filtered_data.set_index(all_emg_filtered_data.columns[0], inplace=True)
         return all_emg_filtered_data
@@ -140,7 +140,7 @@ class EMG(_Data):
                 [self._emg_trig_time, all_emg_rms_envelope_data], axis=1
             ).dropna()
         else:
-            raise ValueError(f"class EMG object was not properly initialized")
+            raise ValueError("class EMG object was not properly initialized")
 
         return all_emg_rms_envelope_data
 
@@ -189,7 +189,7 @@ class EMG(_Data):
                 self._emg_im_data, Frequencies.EMG_TRIG.value, Frequencies.EMG_IM.value
             ).get_data()
         else:
-            raise ValueError(f"class EMG object was not properly initialized")
+            raise ValueError("class EMG object was not properly initialized")
 
         resampled_emg_im_data = pd.DataFrame(
             resampled_emg_im_data, columns=self._emg_im_data.columns
@@ -200,7 +200,7 @@ class EMG(_Data):
                 [self._emg_trig_time, resampled_emg_im_data], axis=1
             ).dropna()
         else:
-            raise ValueError(f"class EMG object was not properly initialized")
+            raise ValueError("class EMG object was not properly initialized")
 
         resampled_emg_im_data.set_index(resampled_emg_im_data.columns[0], inplace=True)
 
