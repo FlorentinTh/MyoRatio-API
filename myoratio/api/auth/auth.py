@@ -1,11 +1,13 @@
 import bcrypt
+from dotenv import dotenv_values
 from flask_httpauth import HTTPTokenAuth
 
-from configuration import Configuration
 from myoratio.api.utils import APIKey
 
+configuration = dotenv_values(".env")
+
 auth = HTTPTokenAuth(header="X-API-Key")
-api_key_hashed = APIKey.hash_key(Configuration.API_KEY.value)
+api_key_hashed = APIKey.hash_key(str(configuration["API_KEY"]))
 
 
 @auth.verify_token
