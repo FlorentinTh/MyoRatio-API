@@ -4,10 +4,10 @@ from gevent import monkey
 
 monkey.patch_all()
 
-from dotenv import dotenv_values  # noqa: E402
 from flask import Flask  # noqa: E402
 from gevent.pywsgi import WSGIServer  # noqa: E402
 
+from myoratio.api import Configuration  # noqa: E402
 from myoratio.api.routes import api_blueprint  # noqa: E402
 from myoratio.data.emg.routes import emg_blueprint  # noqa: E402
 from myoratio.data.imu.routes import imu_blueprint  # noqa: E402
@@ -15,7 +15,7 @@ from myoratio.points.routes import points_blueprint  # noqa: E402
 from myoratio.report.routes import report_blueprint  # noqa: E402
 from myoratio.results.routes import results_blueprint  # noqa: E402
 
-configuration = dotenv_values(".env")
+configuration = Configuration.load()
 
 app = Flask(__name__)
 
