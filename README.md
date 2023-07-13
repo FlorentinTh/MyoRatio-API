@@ -86,7 +86,7 @@ _Windows_
 
 ```sh
 # npm:
-> npm install --no-optional
+> npm install --omit=optional
 
 # yarn:
 > yarn install --ignore-optional
