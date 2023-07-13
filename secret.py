@@ -20,3 +20,5 @@ with open(".env", "r+") as file:
     file.seek(0)
     file.truncate()
     file.write("\n".join(lines_array))
+
+print("--> Secret successfully generated!")
