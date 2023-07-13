@@ -15,9 +15,15 @@ class Configuration:
             data_directory = sys._MEIPASS  # type: ignore
 
         configuration = dotenv_values(dotenv_path=os.path.join(data_directory, ".env"))
+
+        configuration = {
+            "HOST": str(configuration["HOST"]),
+            "API_KEY": str(configuration["API_KEY"]),
+        }
+
         validation = schema_validator(schema, configuration)
 
-        if validation is not None:
+        if not validation:
             raise ValueError("Configuration file is not valid")
 
         return configuration
