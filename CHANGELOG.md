@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.6.2](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.6.1...v2.6.2) (2023-07-14)
+
+
+### Build System
+
+* **standard-version:** add missing .versionrc configuration to better handle changelog generation ([23e1b94](https://github.com/FlorentinTh/MyoRatio-API/commit/23e1b947c8bd4aa7a09e5e9a55e62a666702faca))
+
 ### [2.6.1](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.6.0...v2.6.1) (2023-07-14)
 
 
