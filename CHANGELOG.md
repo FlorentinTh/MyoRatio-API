@@ -2,6 +2,20 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [2.6.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.5.0...v2.6.0) (2023-07-14)
+
+
+### Features
+
+* **auth:** override handler for 401 errors ([948be15](https://github.com/FlorentinTh/MyoRatio-API/commit/948be15c1a2d2e31ae905ec6244429c6fc462796))
+
+
+### Bug Fixes
+
+* **configuration:** fix some issues with configuration validation ([4bf97b2](https://github.com/FlorentinTh/MyoRatio-API/commit/4bf97b28f22a786118b6298ee7755d2c23169755))
+* **configuration:** move to proper environment file for sensitive configuration data and refactor server.py ([52e3cb8](https://github.com/FlorentinTh/MyoRatio-API/commit/52e3cb8ee0d1c27c2c622ea0804923a8c458e2c6))
+* **pyproject:** fix macos build command ([69a2319](https://github.com/FlorentinTh/MyoRatio-API/commit/69a231989f7d60f67d92a4f03603533fdbe9bd5a))
+
 ## [2.5.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.4.0...v2.5.0) (2023-07-09)
 
 
