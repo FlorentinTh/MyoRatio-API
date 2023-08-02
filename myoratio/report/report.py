@@ -1,5 +1,6 @@
 import os
 from enum import Enum
+from typing import Optional
 
 import pandas as pd
 import xlsxwriter
@@ -379,14 +380,31 @@ class Report:
             self._formats["number"],
         )
 
-    def _getChartSerieOptionByMuscle(self, muscle_index: int, time_index: int) -> dict:
-        return {
+    def _getChartSerieOptionByMuscle(
+        self, muscle_label: str, muscle_index: int, time_index: int, chart_type: str
+    ) -> dict:
+        serie_option = {
             "name": f"=data!${xl_col_to_name(muscle_index)}$1",
             "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
             "values": f"=data!${xl_col_to_name(muscle_index)}$2:${xl_col_to_name(muscle_index)}${NormalizationOptions.LENGTH.value + 1}",
         }
 
-    def _insert_chart(self, chart_type: str, offset: int) -> None:
+        if chart_type == ChartType.AREA.value:
+            if muscle_label == "antagonist":
+                serie_option["fill"] = {"color": "#3498DB"}
+            else:
+                serie_option["fill"] = {"color": "#E74C3C"}
+        elif chart_type == ChartType.LINE.value:
+            if muscle_label == "antagonist":
+                serie_option["line"] = {"color": "#3498DB"}
+            else:
+                serie_option["line"] = {"color": "#E74C3C"}
+
+        return serie_option
+
+    def _insert_chart(
+        self, chart_type: str, offset: int, first: Optional[str] = None
+    ) -> None:
         if chart_type not in [chart_type.value for chart_type in ChartType]:
             raise ValueError(f"Expected a value from ChartType, but got {chart_type}")
 
@@ -422,23 +440,29 @@ class Report:
                 )
 
                 if antagonist_index is not None and agonist_index is not None:
-                    if self._stage == Stage.CONCENTRIC.value:
-                        muscle_chart.add_series(
-                            self._getChartSerieOptionByMuscle(agonist_index, time_index)
-                        )
+                    if first == "antagonist":
                         muscle_chart.add_series(
                             self._getChartSerieOptionByMuscle(
-                                antagonist_index, time_index
+                                "antagonist", antagonist_index, time_index, chart_type
+                            )
+                        )
+
+                        muscle_chart.add_series(
+                            self._getChartSerieOptionByMuscle(
+                                "agonist", agonist_index, time_index, chart_type
                             )
                         )
                     else:
                         muscle_chart.add_series(
                             self._getChartSerieOptionByMuscle(
-                                antagonist_index, time_index
+                                "agonist", agonist_index, time_index, chart_type
                             )
                         )
+
                         muscle_chart.add_series(
-                            self._getChartSerieOptionByMuscle(agonist_index, time_index)
+                            self._getChartSerieOptionByMuscle(
+                                "antagonist", antagonist_index, time_index, chart_type
+                            )
                         )
                 else:
                     raise ValueError("Muscle indexes cannot be None")
@@ -451,6 +475,7 @@ class Report:
                         "categories": f"=data!${xl_col_to_name(time_index)}$2:${xl_col_to_name(time_index)}${NormalizationOptions.LENGTH.value + 1}",
                         "values": f"==data!${xl_col_to_name(angle_index)}$2:${xl_col_to_name(angle_index)}${NormalizationOptions.LENGTH.value + 1}",
                         "y2_axis": True,
+                        "line": {"color": "#34495E"},
                     }
                 )
 
@@ -477,7 +502,6 @@ class Report:
         emg = EMG(participant_metadata_folder_path, self._stage)
 
         metadata_angles = angles.get_angles_from_metadata(self._stage)
-
         stats_table_start_row = Constants.XSLX_TABLE_SPACES.value
 
         start_time, interval, stats_table_end_row = self._write_stats_table(
@@ -492,8 +516,10 @@ class Report:
         ratios_matrices_start_row = (
             areas_table_end_row + Constants.XSLX_TABLE_SPACES.value
         )
+
         results = Results()
         ratios = results.get_ratios(participant_metadata_folder_path, self._stage)
+
         ratios_matrices_stop_row, ratios_of_interest = self._write_ratios_matrices(
             ratios_matrices_start_row, ratios
         )
@@ -501,9 +527,27 @@ class Report:
         ratios_table_start_row = (
             ratios_matrices_stop_row + Constants.XSLX_TABLE_SPACES.value
         )
+
         self._write_ratios_table(ratios_table_start_row, ratios_of_interest)
 
-        self._insert_chart(ChartType.AREA.value, 0)
+        ratio = Ratio(self._analysis, self._stage)
+        antagonist, agonist = ratio.get_muscles()
+        areas_values = areas.get_areas()
+
+        mean_antagonist_area = areas_values.loc[
+            areas_values.index.str.contains(antagonist), "mean"
+        ].values[0]
+
+        mean_agonist_area = areas_values.loc[
+            areas_values.index.str.contains(agonist), "mean"
+        ].values[0]
+
+        if mean_antagonist_area < mean_agonist_area:
+            first = "agonist"
+        else:
+            first = "antagonist"
+
+        self._insert_chart(ChartType.AREA.value, 0, first)
         self._insert_chart(ChartType.LINE.value, 600)
 
         self._data_worksheet.autofit()
