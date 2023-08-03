@@ -2,6 +2,23 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.0.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.6.2...v3.0.0) (2023-08-03)
+
+
+### ⚠ BREAKING CHANGES
+
+* **application:** endpoints body parameters have changed
+
+### Features
+
+* **application:** add support for dynamic configuration related to changes in GUI ([48d2e32](https://github.com/FlorentinTh/MyoRatio-API/commit/48d2e32522f0204bdff9a0067cee33b8f327a997))
+
+
+### Bug Fixes
+
+* **report:** fix issue with order of area charts ([45900a3](https://github.com/FlorentinTh/MyoRatio-API/commit/45900a32ca580072ab3ab2acb14a0ba500352b80))
+* **string_helper:** fix issue with analysis label containing "-" characters ([bf8bed3](https://github.com/FlorentinTh/MyoRatio-API/commit/bf8bed3760721c10a87cb889c3a900019953acc3))
+
 ### [2.6.2](https://github.com/FlorentinTh/MyoRatio-API/compare/v2.6.1...v2.6.2) (2023-07-14)
 
 
