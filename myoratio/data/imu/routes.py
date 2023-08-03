@@ -40,10 +40,12 @@ def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
                 )
             )
 
-            if f"small_angle_{csv_filename}.json" not in files:
+            if f"small_angle_{csv_filename}.json" not in files or body["override"]:
                 imu = None
                 try:
-                    imu = IMU(data_path_parameter, csv_file, body["analysis"])
+                    imu = IMU(
+                        data_path_parameter, csv_file, body["analysis"], body["config"]
+                    )
                 except pd_errors.ParserError as error:
                     if imu is not None:
                         message = (
@@ -96,6 +98,17 @@ def generate_imu_analysis() -> tuple[Response, int]:
             "data_path": str,
             "analysis": str,
             "participants": [str],
+            "override": bool,
+            "config": {
+                "id": str,
+                "label": str,
+                "stages": {
+                    "concentric": {"label": str, "opening": bool},
+                    "eccentric": {"label": str, "opening": bool},
+                },
+                "muscles": {"antagonist": str, "agonist": str, "angle": str},
+                "is_angle_advanced": bool,
+            },
         }
 
         validation = API.validate_request_body(body, schema)
@@ -124,6 +137,8 @@ def generate_imu_analysis() -> tuple[Response, int]:
             "data_path": body["data_path"],
             "analysis": body["analysis"],
             "participants": body["participants"],
+            "override": body["override"],
+            "config": body["config"],
         }
 
         # deepcode ignore XSS: already sanitized

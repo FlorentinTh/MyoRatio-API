@@ -40,7 +40,7 @@ def parallel_results_processing(body: dict, participant: str) -> Optional[dict]:
 
         try:
             areas = areas.start_processing()
-            results = Results(areas, body["analysis"])
+            results = Results(areas, body["analysis"], body["config"])
 
             try:
                 angles = Angles(data_path)
@@ -102,7 +102,22 @@ def generate_results() -> tuple[Response, int]:
         )
 
     else:
-        schema = {"data_path": str, "analysis": str, "stage": str, "participants": [str]}
+        schema = {
+            "data_path": str,
+            "analysis": str,
+            "stage": str,
+            "participants": [str],
+            "config": {
+                "id": str,
+                "label": str,
+                "stages": {
+                    "concentric": {"label": str, "opening": bool},
+                    "eccentric": {"label": str, "opening": bool},
+                },
+                "muscles": {"antagonist": str, "agonist": str, "angle": str},
+                "is_angle_advanced": bool,
+            },
+        }
 
         validation = API.validate_request_body(body, schema)
 

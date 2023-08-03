@@ -7,8 +7,7 @@ from openpyxl.worksheet.worksheet import Worksheet
 
 from myoratio.api import Constants
 from myoratio.api.helpers import StringHelper, XLSXHelper
-from myoratio.results import Ratio
-from myoratio.task import Analysis, Stage
+from myoratio.stage import Stage
 
 
 class ParticipantType(Enum):
@@ -18,37 +17,35 @@ class ParticipantType(Enum):
 
 
 class Summary:
-    def __init__(self, data_path: str, analysis: str, stage: str) -> None:
+    def __init__(self, data_path: str, analysis: str, stage: str, config: dict) -> None:
         self._data_path = data_path
-
-        if analysis in [analysis.value for analysis in Analysis]:
-            self._analysis = analysis
-        else:
-            raise ValueError(f"Expected a value from Analysis, but got {analysis}")
+        self._analysis = analysis
 
         if stage in [stage.value for stage in Stage]:
             self._stage = stage
         else:
             raise ValueError(f"Expected a value from Stage, but got {stage}")
 
-        stage_folder_name = self._stage
+        self._config = config
 
-        if self._analysis == Analysis.SIT_STAND.value:
-            if self._stage == Stage.CONCENTRIC.value:
-                stage_folder_name = "standing"
-            else:
-                stage_folder_name = "sitting"
+        if len(self._config["stages"][self._stage]["label"]) > 0:
+            self._stage_folder_name = self._config["stages"][self._stage]["label"]
+        else:
+            self._stage_folder_name = self._stage
+
+        self._antagonist = self._config["muscles"]["antagonist"]
+        self._agonist = self._config["muscles"]["agonist"]
 
         output_base_path = os.path.join(self._data_path, "Results")
 
         self._input_base_path = os.path.join(
-            output_base_path, self._analysis, stage_folder_name
+            output_base_path, self._analysis, self._stage_folder_name
         )
 
         self._workbook = xlsxwriter.Workbook(
             os.path.join(
                 output_base_path,
-                f"summary_{self._analysis}_{stage_folder_name}.xlsx",
+                f"summary_{self._analysis}_{self._stage_folder_name}.xlsx",
             )
         )
 
@@ -93,16 +90,13 @@ class Summary:
                 target_row_index = row[0].row
                 break
 
-        ratio = Ratio(self._analysis, self._stage)
-        antagonist, agonist = ratio.get_muscles()
-
         column_ratio_index = None
         row_ratio_index = None
 
         for column in sheet.iter_cols(min_row=target_row_index, max_row=target_row_index):
             cell_value = str(column[0].value).lower()
 
-            if agonist.lower() in cell_value:
+            if self._agonist in cell_value:
                 column_ratio_index = column[0].column
                 break
 
@@ -113,7 +107,7 @@ class Summary:
         ):
             cell_value = str(row[0].value).lower()
 
-            if antagonist.lower() in cell_value:
+            if self._antagonist in cell_value:
                 row_ratio_index = row[0].row
                 break
 
@@ -212,7 +206,7 @@ class Summary:
             self._data_path,
             "Results",
             self._analysis,
-            self._stage,
+            self._stage_folder_name,
         )
 
         report_files = os.listdir(input_path)
@@ -223,6 +217,7 @@ class Summary:
         sorted_report_files = sorted(
             os.listdir(input_path), key=lambda x: int(x.split("_")[-2])
         )
+
         participtant_type_processed = []
 
         current_row = 0
@@ -253,6 +248,7 @@ class Summary:
             participant = StringHelper.extract_participant_from_report_filename(
                 report_file
             )
+
             participant_data.extend([participant])
 
             total_iterations = self._get_total_number_iterations(report_sheet)

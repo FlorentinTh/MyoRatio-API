@@ -1,27 +1,18 @@
 import json
 import os
-from typing import Optional
 
 import pandas as pd
 
-from myoratio.task import Analysis, Stage
-
 
 class Results:
-    def __init__(
-        self, areas: Optional[dict] = None, analysis: Optional[str] = None
-    ) -> None:
+    def __init__(self, areas: dict, analysis: str, config: dict) -> None:
         if areas is not None and analysis is not None:
             self._areas = areas
+            self._analysis = analysis
+            self._config = config
 
-            if analysis in [analysis.value for analysis in Analysis]:
-                self._analysis = analysis
-            else:
-                raise ValueError(
-                    f"Expected a value from ResponseStatus, but got {analysis}"
-                )
-
-    def get_ratios(self, data_path: str, stage: str) -> pd.DataFrame:
+    @staticmethod
+    def get_ratios(data_path: str, stage: str) -> pd.DataFrame:
         json_ratios_file_path = os.path.join(data_path, f"ratios_{stage}.json")
 
         try:
@@ -40,20 +31,12 @@ class Results:
             areas = list(self._areas[area].values())
 
             for i in range(len(muscles)):
-                if stage == Stage.CONCENTRIC.value:
-                    if self._analysis == Analysis.FLEXION.value:
-                        range_start = i
-                        range_stop = len(muscles)
-                    else:
-                        range_start = 0
-                        range_stop = i + 1
+                if self._config["stages"][stage]["opening"]:
+                    range_start = 0
+                    range_stop = i + 1
                 else:
-                    if self._analysis == Analysis.FLEXION.value:
-                        range_start = 0
-                        range_stop = i + 1
-                    else:
-                        range_start = i
-                        range_stop = len(muscles)
+                    range_start = i
+                    range_stop = len(muscles)
 
                 for j in range(range_start, range_stop):
                     exists = None

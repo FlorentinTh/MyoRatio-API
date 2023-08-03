@@ -19,7 +19,13 @@ def parallel_xlsx_report_generator(
     body: dict, participant: tuple[str, dict]
 ) -> Optional[dict]:
     try:
-        report = Report(body["data_path"], body["analysis"], body["stage"], participant)
+        report = Report(
+            body["data_path"],
+            body["analysis"],
+            body["stage"],
+            body["config"],
+            participant,
+        )
         report.generate_XLSX_report()
     except Exception as error:
         return {
@@ -40,7 +46,21 @@ def generate_xlsx_report() -> tuple[Response, int]:
         )
 
     else:
-        schema = {"data_path": str, "analysis": str, "stage": str}
+        schema = {
+            "data_path": str,
+            "analysis": str,
+            "stage": str,
+            "config": {
+                "id": str,
+                "label": str,
+                "stages": {
+                    "concentric": {"label": str, "opening": bool},
+                    "eccentric": {"label": str, "opening": bool},
+                },
+                "muscles": {"antagonist": str, "agonist": str, "angle": str},
+                "is_angle_advanced": bool,
+            },
+        }
 
         validation = API.validate_request_body(body, schema)
 
@@ -96,7 +116,21 @@ def generate_xlsx_summary() -> tuple[Response, int]:
         )
 
     else:
-        schema = {"data_path": str, "analysis": str, "stage": str}
+        schema = {
+            "data_path": str,
+            "analysis": str,
+            "stage": str,
+            "config": {
+                "id": str,
+                "label": str,
+                "stages": {
+                    "concentric": {"label": str, "opening": bool},
+                    "eccentric": {"label": str, "opening": bool},
+                },
+                "muscles": {"antagonist": str, "agonist": str, "angle": str},
+                "is_angle_advanced": bool,
+            },
+        }
 
         validation = API.validate_request_body(body, schema)
 
@@ -107,7 +141,9 @@ def generate_xlsx_summary() -> tuple[Response, int]:
             )
 
         try:
-            summary = Summary(body["data_path"], body["analysis"], body["stage"])
+            summary = Summary(
+                body["data_path"], body["analysis"], body["stage"], body["config"]
+            )
             summary.generate_XLSX_summary()
         except Exception as error:
             return API.error_response(

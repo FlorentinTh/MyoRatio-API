@@ -1,4 +1,5 @@
 import os
+import re
 from enum import Enum
 from typing import Optional
 
@@ -9,8 +10,7 @@ import pandas as pd
 class Column(Enum):
     EMG_TRIG = 0
     EMG_IM = 1
-    ACCELEROMETER_TIBIALIS_ANTERIOR = 2
-    ACCELEROMETER_TENSOR_FASCIAE_LATAE = 3
+    ACCELEROMETER = 2
 
 
 class _Data:
@@ -29,18 +29,24 @@ class _Data:
         except pd.errors.ParserError as error:
             raise pd.errors.ParserError(error)
 
-    def _get_column_data(self, column: int) -> pd.DataFrame:
+    def _get_column_data(self, column: int, filter: Optional[str] = None) -> pd.DataFrame:
         if column not in [column.value for column in Column]:
-            raise ValueError(f"Expected a value from ResponseStatus, but got {column}")
+            raise ValueError(f"Expected a value from Column, but got {column}")
+
+        if column == Column.ACCELEROMETER.value and filter is None:
+            raise ValueError(
+                f"Expected a filter option for column {Column.ACCELEROMETER.name}"
+            )
 
         if column == 0:
-            return self._dataframe.filter(regex=r"^(?=.*EMG)(?!.*\(IM\)).*")
+            pattern = re.compile(r"^(?=.*EMG)(?!.*\(IM\)).*", re.IGNORECASE)
+            return self._dataframe.filter(regex=pattern)
         elif column == 1:
-            return self._dataframe.filter(regex=r"^(?=.*EMG)(?=.*\(IM\)).*")
+            pattern = re.compile(r"^(?=.*EMG)(?=.*\(IM\)).*", re.IGNORECASE)
+            return self._dataframe.filter(regex=pattern)
         elif column == 2:
-            return self._dataframe.filter(regex=r"^(?=.*TIBIALIS ANTERIOR)(?=.*ACC).*")
-        else:
-            return self._dataframe.filter(regex=r"^(?=.*TENSOR FASCIAE LATAE)(?=.*ACC).*")
+            pattern = re.compile(rf"^(?=.*{filter})(?=.*ACC).*", re.IGNORECASE)
+            return self._dataframe.filter(regex=pattern)
 
     def _get_time_emg(self, data: pd.DataFrame, skip: Optional[int] = None) -> pd.Series:
         if skip is None:

@@ -2,7 +2,7 @@ import random
 
 import pandas as pd
 
-from myoratio.task import Stage
+from myoratio.stage import Stage
 
 
 class Points:

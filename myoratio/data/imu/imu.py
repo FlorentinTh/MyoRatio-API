@@ -9,34 +9,24 @@ from scipy.signal import savgol_filter
 from myoratio.api.helpers import PathHelper, PlotHelper
 from myoratio.data import Column, Frequencies, _Data
 from myoratio.data.processing.resample import Resample
-from myoratio.task import Analysis
 
 
 class IMU(_Data):
-    def __init__(self, base_path: str, csv_file: str, analysis: str) -> None:
+    def __init__(
+        self, base_path: str, csv_file: str, analysis: str, config: dict
+    ) -> None:
         self._csv_file = csv_file
         self._base_path = base_path
         self._csv_path = self.get_csv_path()
-
-        if analysis in [analysis.value for analysis in Analysis]:
-            self._analysis = analysis
-        else:
-            raise ValueError(f"Expected a value from ResponseStatus, but got {analysis}")
+        self._analysis = analysis
+        self._config = config
 
         _Data.__init__(self, csv_file, is_imu=True)
 
     def _get_accelerometer_raw_data(self) -> pd.DataFrame:
-        if (
-            self._analysis == Analysis.EXTENSION.value
-            or self._analysis == Analysis.FLEXION.value
-        ):
-            data_acc_raw = self._get_column_data(
-                Column.ACCELEROMETER_TIBIALIS_ANTERIOR.value
-            )
-        else:
-            data_acc_raw = self._get_column_data(
-                Column.ACCELEROMETER_TENSOR_FASCIAE_LATAE.value
-            )
+        data_acc_raw = self._get_column_data(
+            Column.ACCELEROMETER.value, filter=self._config["muscles"]["angle"]
+        )
 
         nb_imu_rows_to_keep = math.ceil(
             self._get_total_recording_time() * Frequencies.IMU.value
@@ -51,7 +41,7 @@ class IMU(_Data):
         angle_z = []
 
         for i, column in enumerate(resampled_data):
-            if self._analysis == Analysis.EXTENSION.value:
+            if self._config["is_angle_advanced"]:
                 pitch = math.sqrt(accelerometer_x[i] ** 2 + accelerometer_z[i] ** 2)
 
                 if pitch != 0.0:
