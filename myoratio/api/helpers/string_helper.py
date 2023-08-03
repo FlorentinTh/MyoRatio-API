@@ -18,7 +18,7 @@ class StringHelper:
 
     @staticmethod
     def extract_participant_from_report_filename(filename: str) -> str:
-        pattern = re.compile(r"report_\w+_\w+_(participant_\d+)_\w+")
+        pattern = re.compile(r"report_[\w-]+_[\w-]+_(participant_\d+)_\w+")
         match = pattern.match(filename)
 
         if match:
