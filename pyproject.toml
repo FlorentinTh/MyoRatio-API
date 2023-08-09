@@ -23,7 +23,6 @@ publish = {shell = "git push --follow-tags origin main"}
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
-gevent = "^23.7.0"
 flask = "^2.3.2"
 pandas = "^2.0.3"
 simple-schema-validator = "^0.0.9"
@@ -34,7 +33,8 @@ xlsxwriter = "^3.1.2"
 scipy = "^1.11.1"
 dask = "^2023.7.0"
 openpyxl = "^3.1.2"
-python-dotenv = "^1.0.0"
+environs = "^9.5.0"
+gevent = "22.10.2"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
