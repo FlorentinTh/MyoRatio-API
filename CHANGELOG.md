@@ -2,6 +2,14 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.1.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.0.3...v3.1.0) (2023-08-09)
+
+
+### Bug Fixes
+
+* **configuration:** move configuration from python-dotenv to environs ([46a0d58](https://github.com/FlorentinTh/MyoRatio-API/commit/46a0d5811bdcf863d2cd57db36ceebf84bffa9d8))
+* **dependencies:** change and update required dependencies ([1311169](https://github.com/FlorentinTh/MyoRatio-API/commit/13111694997138b690a651e98d451b29de14b95c))
+
 ### [3.0.3](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.0.2...v3.0.3) (2023-08-08)
 
 ### [3.0.2](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.0.1...v3.0.2) (2023-08-08)
