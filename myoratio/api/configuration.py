@@ -1,7 +1,7 @@
 import os
 import sys
 
-from dotenv import dotenv_values
+from environs import Env
 from simple_schema_validator import schema_validator
 
 
@@ -14,11 +14,12 @@ class Configuration:
         if getattr(sys, "frozen", False) and hasattr(sys, "_MEIPASS"):
             data_directory = sys._MEIPASS  # type: ignore
 
-        configuration = dotenv_values(dotenv_path=os.path.join(data_directory, ".env"))
+        env = Env()
+        env.read_env(os.path.join(data_directory, ".env"), recurse=False)
 
         configuration = {
-            "HOST": str(configuration["HOST"]),
-            "API_KEY": str(configuration["API_KEY"]),
+            "HOST": str(env("HOST")),
+            "API_KEY": str(env("API_KEY")),
         }
 
         validation = schema_validator(schema, configuration)
