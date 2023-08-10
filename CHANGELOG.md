@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.1.1](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.1.0...v3.1.1) (2023-08-10)
+
+
+### Bug Fixes
+
+* **dependencies:** update dependency tree ([f8df39d](https://github.com/FlorentinTh/MyoRatio-API/commit/f8df39d1446da56965c2c58678f2a08a167622a7))
+
 ## [3.1.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.0.3...v3.1.0) (2023-08-09)
 
 
