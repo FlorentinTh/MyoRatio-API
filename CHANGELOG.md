@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.2.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.1.1...v3.2.0) (2023-09-10)
+
+
+### Bug Fixes
+
+* **summary:** fix issue with summray generation sort data by type of participants ([0b63803](https://github.com/FlorentinTh/MyoRatio-API/commit/0b63803c73839ac0b411f18b69909ab3d62cafd9))
+
 ### [3.1.1](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.1.0...v3.1.1) (2023-08-10)
 
 
