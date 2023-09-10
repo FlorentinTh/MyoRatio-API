@@ -218,11 +218,34 @@ class Summary:
             os.listdir(input_path), key=lambda x: int(x.split("_")[-2])
         )
 
+        healthy_reports = []
+        walker_reports = []
+        non_walker_reports = []
+
+        for report_file in sorted_report_files:
+            participant_type = os.path.splitext(report_file)[0][-1].lower()
+
+            if participant_type == ParticipantType.HEALTHY.value:
+                healthy_reports.append(report_file)
+            elif participant_type == ParticipantType.WALKER.value:
+                walker_reports.append(report_file)
+            elif participant_type == ParticipantType.NON_WALKER.value:
+                non_walker_reports.append(report_file)
+            else:
+                raise ValueError(
+                    f"Expected a value from ParticipantType, but got {participant_type}"
+                )
+
+        report_files_by_type = []
+        report_files_by_type.extend(healthy_reports)
+        report_files_by_type.extend(walker_reports)
+        report_files_by_type.extend(non_walker_reports)
+
         participtant_type_processed = []
 
         current_row = 0
 
-        for report_file in sorted_report_files:
+        for report_file in report_files_by_type:
             participant_type = os.path.splitext(report_file)[0][-1].lower()
 
             if participant_type not in participtant_type_processed:
