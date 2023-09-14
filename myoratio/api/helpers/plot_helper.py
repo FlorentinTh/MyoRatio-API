@@ -1,12 +1,9 @@
 import os
 
-import matplotlib
 import pandas as pd
+from matplotlib import pyplot as plt
 
-matplotlib.use("SVG")
-from matplotlib import pyplot as plt  # noqa: E402
-
-from .path_helper import PathHelper  # noqa: E402
+from .path_helper import PathHelper
 
 
 class PlotHelper:
@@ -42,9 +39,9 @@ class PlotHelper:
 
     def save_plot(self, base_path: str, prefix: str = "") -> None:
         if bool(prefix and prefix.isspace()) is True:
-            filename = os.path.splitext(self._csv_path[1])[0] + ".svg"
+            filename = os.path.splitext(self._csv_path[1])[0] + ".png"
         else:
-            filename = f"{prefix}_" + os.path.splitext(self._csv_path[1])[0] + ".svg"
+            filename = f"{prefix}_" + os.path.splitext(self._csv_path[1])[0] + ".png"
 
         split_path = self._csv_path[0].split(os.sep)
         analysis = split_path[len(split_path) - 2]
