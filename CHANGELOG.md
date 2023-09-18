@@ -2,6 +2,18 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.3.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.2.0...v3.3.0) (2023-09-18)
+
+
+### Bug Fixes
+
+* **plot_helper:** move from IMU plot outputed in SVG to PNG for fixing laggy DOM issue in GUI ([3796e99](https://github.com/FlorentinTh/MyoRatio-API/commit/3796e994f4990432b6c1a21e8e876904e50cf516))
+
+
+### Build System
+
+* **pyproject.toml:** change build command to remove collection of packages that are no longer required ([12c89cb](https://github.com/FlorentinTh/MyoRatio-API/commit/12c89cb6bd2801e31c9def67f67677492a2d714a))
+
 ## [3.2.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.1.1...v3.2.0) (2023-09-10)
 
 
