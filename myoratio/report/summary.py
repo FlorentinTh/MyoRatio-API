@@ -45,7 +45,7 @@ class Summary:
         self._workbook = xlsxwriter.Workbook(
             os.path.join(
                 output_base_path,
-                f"summary_{self._analysis}_{self._stage_folder_name}.xlsx",
+                f"summary_{self._analysis}_{self._stage_folder_name.lower()}.xlsx",
             )
         )
 
