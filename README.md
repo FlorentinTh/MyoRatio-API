@@ -17,10 +17,6 @@
   </a>
 </p>
 
-## Documentation
-
-[French](docs/guide-utilisateur.pdf) & [English](docs/user-guide.pdf) user guides can be found under the docs folder.
-
 ## Authors
 
 - [**Florentin Thullier**](https://github.com/FlorentinTh) - 2022
@@ -39,19 +35,19 @@
 
 ### Related Project
 
-- [MyoRatio-GUI](https://github.com/FlorentinTh/MyoRatio-GUI)
+- [MyoRatio](https://github.com/FlorentinTh/MyoRatio)
 
 
 ### Project Setup
 
 ```sh
-$/> mkdir MyoRatio
+$/> mkdir MyoRatioApp
 
-$/> cd MyoRatio
+$/> cd MyoRatioApp
 
 $/> git clone https://github.com/FlorentinTh/MyoRatio-API.git
 
-$/> git clone https://github.com/FlorentinTh/MyoRatio-GUI.git
+$/> git clone https://github.com/FlorentinTh/MyoRatio.git
 ```
 
 ### API Setup
@@ -75,7 +71,7 @@ $ mv .env.example .env
 ### GUI Setup
 
 ```sh
-$/> cd ../MyoRatio-GUI
+$/> cd ../MyoRatio
 
 # Windows:
 > ren env.app.json.example env.app.json
@@ -128,7 +124,7 @@ $/> poetry run serve [port]
 
 ```sh
 # start the GUI
-$/> cd ../MyoRatio-GUI
+$/> cd ../MyoRatio
 $/> (npm | yarn | pnpm) run start
 ```
 
@@ -186,7 +182,7 @@ $/> cd ../MyoRatio-API
 $ poetry poe build-mac
 
 # build the GUI
-$/> cd ../MyoRatio-GUI
+$/> cd ../MyoRatio
 ## Windows:
 > (npm | yarn | pnpm) run build:win && (npm | yarn | pnpm) run publish:win
 ## macOS:
@@ -194,7 +190,7 @@ $/> cd ../MyoRatio-GUI
 
 ```
 
-> The resulting file is located under the folder of your current architecture inside```./MyoRatio-GUI/release```
+> The resulting file is located under the folder of your current architecture inside```./MyoRatio/release```
 
 
 ## License
