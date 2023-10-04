@@ -2,6 +2,25 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [3.4.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.3.0...v3.4.0) (2023-10-04)
+
+
+### Bug Fixes
+
+* **summmary:** force lower case of stage name for summary output filename ([7ba78c1](https://github.com/FlorentinTh/MyoRatio-API/commit/7ba78c1540a2bdbd4c51fe9963dbf6e4cb5a363d))
+
+
+### Styling
+
+* **readme:** clean readme ([d3de324](https://github.com/FlorentinTh/MyoRatio-API/commit/d3de3244a9858b4a0b0a6d2db0546972a2ee17ef))
+* **readme:** update main title ([55bf530](https://github.com/FlorentinTh/MyoRatio-API/commit/55bf530636851aac5c2e064b5fa33711018ab339))
+
+
+### Documentation
+
+* **readme:** update readme ([918a7a6](https://github.com/FlorentinTh/MyoRatio-API/commit/918a7a655931796cbbefa49051ff328cc81b6770))
+* **README:** update README ([d80b540](https://github.com/FlorentinTh/MyoRatio-API/commit/d80b540ba01da6458eb97de6b729af9e328e491a))
+
 ## [3.3.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.2.0...v3.3.0) (2023-09-18)
 
 
