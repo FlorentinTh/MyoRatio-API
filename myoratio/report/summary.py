@@ -4,6 +4,7 @@ from enum import Enum
 import xlsxwriter
 from openpyxl import load_workbook
 from openpyxl.worksheet.worksheet import Worksheet
+from pathvalidate import sanitize_filepath
 
 from myoratio.api import Constants
 from myoratio.api.helpers import StringHelper, XLSXHelper
@@ -202,11 +203,13 @@ class Summary:
         )
 
     def generate_XLSX_summary(self) -> None:
-        input_path = os.path.join(
-            self._data_path,
-            "Results",
-            self._analysis,
-            self._stage_folder_name,
+        input_path = sanitize_filepath(
+            os.path.join(
+                self._data_path,
+                "Results",
+                self._analysis,
+                self._stage_folder_name,
+            )
         )
 
         report_files = os.listdir(input_path)

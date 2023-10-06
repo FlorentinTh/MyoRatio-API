@@ -3,6 +3,7 @@ import os
 from typing import Optional
 
 import pandas as pd
+from pathvalidate import sanitize_filepath
 from scipy import integrate
 
 
@@ -67,7 +68,9 @@ class Areas:
         else:
             output_filename = f"{prefix}_{self._stage}{ext}"
 
-        file_output_path = os.path.join(self._data_path, output_filename)
+        file_output_path = sanitize_filepath(
+            os.path.join(self._data_path, output_filename)
+        )
 
         if file_type == "JSON":
             try:

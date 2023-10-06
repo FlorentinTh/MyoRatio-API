@@ -1,6 +1,8 @@
 import json
 import os
 
+from pathvalidate import sanitize_filepath
+
 
 class JSONHelper:
     @staticmethod
@@ -9,7 +11,7 @@ class JSONHelper:
 
         try:
             metadata_file = open(
-                os.path.join(metadata_analysis_path, "data.json"),
+                sanitize_filepath(os.path.join(metadata_analysis_path, "data.json")),
                 mode="r",
                 encoding="utf-8",
             )

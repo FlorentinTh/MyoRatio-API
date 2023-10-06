@@ -6,6 +6,7 @@ from dask.base import compute
 from dask.delayed import delayed
 from flask import Blueprint, Response, jsonify, request
 from pandas import errors as pd_errors
+from pathvalidate import sanitize_filepath
 
 from myoratio.api import API, ResponseStatus
 from myoratio.api.auth import auth
@@ -32,11 +33,13 @@ def parallel_imu_processing(body: dict, participant: str) -> Optional[dict]:
             csv_filename, _ = os.path.basename(csv_file).rsplit(".", 1)
 
             files = os.listdir(
-                os.path.join(
-                    PathHelper.get_metadata_analysis_path(
-                        data_path_parameter, body["analysis"]
-                    ),
-                    participant,
+                sanitize_filepath(
+                    os.path.join(
+                        PathHelper.get_metadata_analysis_path(
+                            data_path_parameter, body["analysis"]
+                        ),
+                        participant,
+                    )
                 )
             )
 

@@ -2,6 +2,7 @@ import json
 import os
 
 import pandas as pd
+from pathvalidate import sanitize_filepath
 
 
 class Results:
@@ -65,7 +66,7 @@ class Results:
         return ratios
 
     def write_ratios(self, data_path: str, stage: str, data: dict) -> None:
-        path = os.path.join(data_path, f"ratios_{stage}.json")
+        path = sanitize_filepath(os.path.join(data_path, f"ratios_{stage}.json"))
 
         try:
             with open(path, "w") as write_file:
