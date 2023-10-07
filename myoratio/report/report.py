@@ -288,22 +288,26 @@ class Report:
 
             for j, row in ratios.iterrows():
                 if antagonist_column is None or agonist_column is None:
-                    if StringHelper.include_substring(row[i]["muscle"], self._agonist):
+                    if StringHelper.include_substring(
+                        row.iloc[i]["muscle"], self._agonist
+                    ):
                         antagonist_column = j + 2  # type: ignore
 
-                    if StringHelper.include_substring(row[i]["muscle"], self._antagonist):
+                    if StringHelper.include_substring(
+                        row.iloc[i]["muscle"], self._antagonist
+                    ):
                         agonist_column = start_row + j + 2  # type: ignore
 
                 self._report_worksheet.write(
-                    start_row + j + 2, 1, row[i]["muscle"], self._formats["bold"]  # type: ignore
+                    start_row + j + 2, 1, row.iloc[i]["muscle"], self._formats["bold"]  # type: ignore
                 )
 
                 self._report_worksheet.write(
-                    start_row + 1, j + 2, row[i]["muscle"], self._formats["header"]  # type: ignore
+                    start_row + 1, j + 2, row.iloc[i]["muscle"], self._formats["header"]  # type: ignore
                 )
 
                 self._report_worksheet.write_row(
-                    start_row + j + 2, 2, row[i]["values"], self._formats["number_short"]  # type: ignore
+                    start_row + j + 2, 2, row.iloc[i]["values"], self._formats["number_short"]  # type: ignore
                 )
 
             if antagonist_column is not None and agonist_column is not None:

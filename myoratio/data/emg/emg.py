@@ -44,7 +44,7 @@ class EMG(_Data):
         self._emg_trig_time = self._get_time_emg(self._emg_trig_data)
         self._emg_trig_data = pd.concat(
             [self._emg_trig_time, self._emg_trig_data], axis=1
-        )
+        ).dropna()
         self._emg_trig_data.set_index(self._emg_trig_data.columns[0], inplace=True)
 
     def _get_emg_im_raw_data(self) -> None:
