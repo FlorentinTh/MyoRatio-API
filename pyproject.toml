@@ -35,7 +35,7 @@ openpyxl = "^3.1.2"
 environs = "^9.5.0"
 gevent = "^23.9.1"
 pathvalidate = "^3.2.0"
-xlsxwriter = "^3.1.7"
+xlsxwriter = "^3.1.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.7.0"
