@@ -38,7 +38,7 @@ pathvalidate = "^3.2.0"
 xlsxwriter = "^3.1.9"
 
 [tool.poetry.group.dev.dependencies]
-black = "^23.7.0"
+black = "^23.10.1"
 pyinstaller = "^5.13.0"
 isort = "^5.12.0"
 commitizen = "^3.5.2"
