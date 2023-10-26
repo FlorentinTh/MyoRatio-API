@@ -10,8 +10,8 @@
   <a href="https://github.com/FlorentinTh/MyoRatio-API/actions/workflows/github-code-scanning/codeql">
     <img src="https://img.shields.io/github/actions/workflow/status/FlorentinTh/MyoRatio-API/github-code-scanning/codeql?style=for-the-badge&label=CodeQL" alt="CodeQL" />
   </a>
-  <a href="https://github.com/FlorentinTh/MyoRatio-API/releases">
-    <img src="https://img.shields.io/github/release/FlorentinTh/MyoRatio-API?style=for-the-badge" alt="Latest Version" />
+  <a href="https://github.com/FlorentinTh/MyoRatio-API/releases/latest">
+    <img src="https://img.shields.io/github/v/tag/FlorentinTh/MyoRatio-API?style=for-the-badge" />
   </a>
   <img src="https://img.shields.io/github/release-date/florentinth/MyoRatio-API?style=for-the-badge" alt="Release Date" />
   <img src="https://img.shields.io/badge/platforms-windows%20%26%20macOS%20-lightseagreen?style=for-the-badge" alt="Platforms" />
@@ -105,13 +105,16 @@ $ mkdir ./.certs
 $ openssl genrsa -out ./.certs/key.pem 4096
 
 # Generate a new Certificate Signing Request (CSR):
-$ openssl req -new -sha256 -key ./.certs/key.pem -out ./.certs/csr.csr
+$ openssl req -new -sha256 -key ./.certs/key.pem -out ./.certs/csr.csr -subj "/C=<your_country_code>/ST=<your_state>/L=<your_location>/O=<your_organization>/OU=<your_organization_unit>/CN=<your_common_name>"
 
 # Generate a  new certificate (valid 1 year):
 $ openssl req -x509 -sha256 -days 365 -key ./.certs/key.pem -in ./.certs/csr.csr -out ./.certs/certificate.pem
 
 # Convert your certificate:
-$ openssl pkcs12 -export -inkey ./.certs/key.pem -in ./.certs/certificate.pem -out ./.certs/certificate.pfx
+$ openssl pkcs12 -export -inkey ./.certs/key.pem -in ./.certs/certificate.pem -out ./.certs/certificate.pfx -password pass:<your_cert_passphrase>
+
+# Convert pfx certficate into Base64
+$ openssl base64 -in ./.certs/certificate.pfx -out ./.certs/certificate.txt
 ```
 
 > **IMPORTANT!** Please update the ```env.build.json``` file according to the answer provided while creating the SSL certificate
