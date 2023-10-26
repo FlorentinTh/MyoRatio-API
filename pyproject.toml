@@ -12,9 +12,9 @@ serve = "myoratio:run"
 
 [tool.poe.tasks]
 prebuild = {shell = "python secret.py"}
-make-win = "pyinstaller --collect-all charset_normalizer --add-data \".env;.\" --console --clean --name MyoRatioAPI --icon=assets\\icons\\win\\app.ico server.py --noconfirm"
+make-win = "pyinstaller --collect-all charset_normalizer --add-data \".env;.\" --console --clean --name MyoRatioAPI --icon=\"assets\\icons\\win\\app.ico\" server.py --noconfirm"
 build-win = ["prebuild", "make-win"]
-make-mac = "pyinstaller --collect-all charset_normalizer --add-data \".env:.\" --console --clean --name MyoRatioAPI --icon=assets\\icons\\mac\\app.icns server.py --noconfirm"
+make-mac = "pyinstaller --collect-all charset_normalizer --add-data \".env:.\" --console --clean --name MyoRatioAPI --icon=\"assets\\icons\\mac\\app.icns\" server.py --noconfirm"
 build-mac = ["prebuild", "make-mac"]
 lint = {shell = "black . && flake8 && isort --profile black ."}
 commit = "cz commit"
