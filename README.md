@@ -1,24 +1,23 @@
-<p align="center">
-  <img src="./assets/icons/app.png" alt="MyoRatio" height="200px"/>
-</p>
-
 <div align="center">
+  <img src="./src/assets/icons/app.png" alt="MyoRatio" height="200px" /><br />
   <h1>MyoRatio</h1>
-</div>
-
-<p align="center">
   <a href="https://github.com/FlorentinTh/MyoRatio-API/actions/workflows/github-code-scanning/codeql">
     <img src="https://img.shields.io/github/actions/workflow/status/FlorentinTh/MyoRatio-API/github-code-scanning/codeql?style=for-the-badge&label=CodeQL" alt="CodeQL" />
   </a>
-  <img src="https://img.shields.io/github/release-date/florentinth/MyoRatio-API?style=for-the-badge" alt="Release Date" />
+  <a href="#">
+    <img src="https://img.shields.io/github/release-date/florentinth/MyoRatio-API?style=for-the-badge" alt="Release Date" />
+  </a>
   <a href="https://github.com/FlorentinTh/MyoRatio-API/releases/latest">
     <img src="https://img.shields.io/github/v/tag/FlorentinTh/MyoRatio-API?style=for-the-badge" />
   </a>
-  <img src="https://img.shields.io/badge/platforms-windows%20%26%20macOS%20-lightseagreen?style=for-the-badge" alt="Platforms" />
-  <a href="https://github.com/FlorentinTh/MyoRatio-API/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/florentinth/MyoRatio-API?style=for-the-badge" alt="License" />
+  <a href="#">
+    <img src="https://img.shields.io/badge/platforms-windows%20%26%20macOS%20-lightseagreen?style=for-the-badge" alt="Platforms" />
   </a>
-</p>
+  <a href="https://github.com/FlorentinTh/MyoRatio-API/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/florentinth/MyoRatio-API?style=for-the-badge" alt="License"/>
+  </a>
+</div>
+<br />
 
 ## Authors
 
@@ -110,6 +109,7 @@ $/> cd ../MyoRatio-API
 $/> poetry run serve [port]
 ```
 
+> [!NOTE]
 > Parameter ```[port]``` is optionnal. By default it will be  **3300** only if available.
 
 ```sh
@@ -121,6 +121,7 @@ $/> (npm | yarn | pnpm) run start
 
 ### Submitting Changes
 
+> [!IMPORTANT]
 > **Your commits should follow the [conventional commits specification](https://www.conventionalcommits.org/en/v1.0.0/) !**
 
 - For the API, you can use the following command to proceed your commits:
@@ -156,14 +157,15 @@ $/> yarn run release && yarn run publish
 # or
 $/> pnpm run release && pnpm run publish
 ```
-
-> **NOTE:** once the publish command is completed, a github action workflow will be triggered and the release will be automatically created in the remote repository populated with the installers for both platforms.
+> [!NOTE]
+> Once the publish command is completed, a github action workflow will be triggered and the release will be automatically created in the remote repository populated with the installers for both platforms.
 
 ### Manually Release Installers
 
 If you want to manually create the release installer, follow these instructions:
 
-> **NOTE:** for the macOS platform you will need to install the ```create-dmg``` package on the application project.
+> [!IMPORTANT]
+> For the macOS platform you will need to install the ```create-dmg``` package on the application project.
 
 ```sh
 # Move to the application project folder
@@ -175,7 +177,8 @@ $ npm install -D create-dmg@6.0.0
 $ (yarn | pnpm) add -D create-dmg@6.0.0
 ```
 
-> **IMPORTANT:** on windows it is required to generate an SSL certificate to sign the installer. You can use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to benefit from the availability of the openssl command line tool:
+> [!IMPORTANT]
+> On windows it is required to generate an SSL certificate to sign the installer. You can use [WSL](https://learn.microsoft.com/en-us/windows/wsl/install) to benefit from the availability of the openssl command line tool:
 
 ```sh
 # Create a new base folder to store your certificate files
@@ -185,19 +188,20 @@ $ mkdir ./.certs
 $ openssl genrsa -out ./.certs/key.pem 4096
 
 # Generate a new Certificate Signing Request (CSR)
-$ openssl req -new -sha256 -key ./.certs/key.pem -out ./.certs/csr.csr -subj "/C=your_country_code/ST=your_state/L=your_location/O=your_organization/OU=your_organization_unit/CN=your_common_name"
+$ openssl req -new -sha256 -key ./.certs/key.pem -out ./.certs/csr.csr -subj "/C=<your_country_code>/ST=<your_state>/L=<your_location>/O=<your_organization>/OU=<your_organization_unit>/CN=<your_common_name>"
 
 # Generate a new certificate (valid 1 year)
 $ openssl req -x509 -sha256 -days 365 -key ./.certs/key.pem -in ./.certs/csr.csr -out ./.certs/certificate.pem
 
 # Convert your certificate into PFX
-$ openssl pkcs12 -export -inkey ./.certs/key.pem -in ./.certs/certificate.pem -out ./.certs/certificate.pfx -password pass:your_cert_passphrase
+$ openssl pkcs12 -export -inkey ./.certs/key.pem -in ./.certs/certificate.pem -out ./.certs/certificate.pfx -password pass:<your_cert_passphrase>
 
 # [OPTIONAL] Now using powershell, you can convert your PFX certficate into Base64
 > [System.Convert]::ToBase64String([System.IO.File]::ReadAllBytes('.\certificate.pfx')) > '.\.certs\certificate.txt'
 ```
 
-> **IMPORTANT:** once the PFX certificate is generated Please update the ```env.build.json``` file according to the passphrase provided in the command respectively.
+> [!WARNING]
+> once the PFX certificate is generated Please update the ```env.build.json``` file according to the passphrase provided in the command respectively.
 
 ```sh
 # Move to the API project directory
@@ -219,6 +223,7 @@ $/> cd ../MyoRatio
 
 ```
 
+> [!NOTE]
 > The resulting file is located under the folder of your current architecture inside```./MyoRatio/release```
 
 
