@@ -24,7 +24,7 @@ publish = {shell = "git push --follow-tags origin main"}
 [tool.poetry.dependencies]
 python = ">=3.10,<3.12"
 flask = "^3.0.0"
-pandas = "^2.1.1"
+pandas = "^2.1.2"
 simple-schema-validator = "^0.0.9"
 flask-httpauth = "^4.8.0"
 bcrypt = "^4.0.1"
