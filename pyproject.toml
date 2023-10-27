@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "MyoRatio-API"
-version = "3.4.0"
+version = "3.4.1"
 description = "API for the MyoRatio Application"
 authors = ["Florentin Thullier <fthullie@uqac.ca>"]
 license = "AGPL-3.0"

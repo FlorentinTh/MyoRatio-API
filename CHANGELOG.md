@@ -2,6 +2,43 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [3.4.1](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.4.0...v3.4.1) (2023-10-27)
+
+
+### Bug Fixes
+
+* **app:** fix several security issues related to path sanitization ([16ef5cf](https://github.com/FlorentinTh/MyoRatio-API/commit/16ef5cf079c16ad5b47ac69db96fa7110af7b125))
+* **pandas:** fix few issues with latest update of pandas dependency ([0df6e64](https://github.com/FlorentinTh/MyoRatio-API/commit/0df6e6465aa43cd81604a73b83b1beb0e49bfbe7))
+* **project:** add missing entries for macOs platform in .gitignore file ([25b8b59](https://github.com/FlorentinTh/MyoRatio-API/commit/25b8b59c200cc80344c0a9a26f23fdb603a6700b))
+
+
+### Documentation
+
+* **README:** fix issue in README related to the path for CodeQL badge ([538c740](https://github.com/FlorentinTh/MyoRatio-API/commit/538c740ca9146da28ad1ad67a62833a642746873))
+* **README:** update README to add CodeQL badge ([8f5dccb](https://github.com/FlorentinTh/MyoRatio-API/commit/8f5dccb06d9b099fb882c4055ca814c6dff593bc))
+* **readme:** update readme.md file ([ebebdc9](https://github.com/FlorentinTh/MyoRatio-API/commit/ebebdc9ff0bd646ef4b5bfd53fede4f7a1715a38))
+* **readme:** update README.md file ([1c58057](https://github.com/FlorentinTh/MyoRatio-API/commit/1c5805794b5c6aa8730db671c2343c4d37719f11))
+* **readme:** yet another fix in README related to the path for CodeQL badge ([7719f48](https://github.com/FlorentinTh/MyoRatio-API/commit/7719f4894772c2953cdb37cf3036e00185e51af4))
+
+
+### Build System
+
+* **dependencies:** update dask and xlsxwriter to their latest versions ([0dc12e1](https://github.com/FlorentinTh/MyoRatio-API/commit/0dc12e1293905240740bb98206dd22d81f215227))
+* **dependencies:** update dependencies ([f55827f](https://github.com/FlorentinTh/MyoRatio-API/commit/f55827f71bb063850556cf7905f431d6f99d963b))
+* **dependencies:** update pandas dependency to latest version ([2ada5ee](https://github.com/FlorentinTh/MyoRatio-API/commit/2ada5ee2086efeef32730dbff8decad297d3310d))
+* **dependencies:** update project dependencies ([a2a57cf](https://github.com/FlorentinTh/MyoRatio-API/commit/a2a57cf9855d6ebffac94d8eefc8c1f047ab6c02))
+* **dependencies:** update pyinstaller to the latest version ([2090fbe](https://github.com/FlorentinTh/MyoRatio-API/commit/2090fbe4493f0252c1ad41ff48c7fd7f5fd825cf))
+* **dependencies:** update scipy to new version and revert pandas to previous version since ^2.1.0 introduced breaking changes ([c2dd6c0](https://github.com/FlorentinTh/MyoRatio-API/commit/c2dd6c05d0a805558dbad10f3827f5e885711689))
+* **dependencies:** update xlsxwriter to latest version ([c188273](https://github.com/FlorentinTh/MyoRatio-API/commit/c188273ddf637d117bc064dfbb98d488797779d3))
+* **poetry:** fix potential issue with poetry make commands for both platforms ([ebe5da1](https://github.com/FlorentinTh/MyoRatio-API/commit/ebe5da115d59f4b7116a7e70b2dc2ba34270b040))
+* **poetry:** yet another potential fix to resolve issue with poetry make commands for both platforms ([07736d0](https://github.com/FlorentinTh/MyoRatio-API/commit/07736d0e6aa95b6e0a43efa86351adb4bbd1d0eb))
+* **poetry:** yet another potential fix to resolve issue with poetry make commands for both platforms ([a38d4fc](https://github.com/FlorentinTh/MyoRatio-API/commit/a38d4fc5557f4fa861f7a7d9076fc26041908f91))
+* **project:** add code of conduct and contributing guidelines ([c97e464](https://github.com/FlorentinTh/MyoRatio-API/commit/c97e464511d107efc977308dc72d049ab518f5bc))
+* **project:** add security guidelines in SECURITY.md ([f95b7aa](https://github.com/FlorentinTh/MyoRatio-API/commit/f95b7aa1c0ee6631d4343b93ed14c2e6fbe42641))
+* **project:** dependabot ([3d6eb32](https://github.com/FlorentinTh/MyoRatio-API/commit/3d6eb32551208446898d023051b331e5c0ff0887))
+* **project:** dependencies ([da79f61](https://github.com/FlorentinTh/MyoRatio-API/commit/da79f6170d238fa93e220aeec8b952f26e492afa))
+* **project:** dependencies ([3ea0f37](https://github.com/FlorentinTh/MyoRatio-API/commit/3ea0f376d5eb722e80a2b79517981b25224c8b5d))
+
 ## [3.4.0](https://github.com/FlorentinTh/MyoRatio-API/compare/v3.3.0...v3.4.0) (2023-10-04)
 
 
