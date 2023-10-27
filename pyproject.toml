@@ -11,11 +11,11 @@ packages = [{ include = "myoratio" }]
 serve = "myoratio:run"
 
 [tool.poe.tasks]
-prebuild = {shell = "python secret.py"}
+secret = {shell = "python secret.py"}
 make-win = "pyinstaller --collect-all charset_normalizer --add-data \".env;.\" --console --clean --name MyoRatioAPI \"--icon=assets\\icons\\win\\app.ico\" server.py --noconfirm"
-build-win = ["prebuild", "make-win"]
+build-win = ["secret", "make-win"]
 make-mac = "pyinstaller --collect-all charset_normalizer --add-data \".env:.\" --console --clean --name MyoRatioAPI \"--icon=assets\\icons\\mac\\app.icns\" server.py --noconfirm"
-build-mac = ["prebuild", "make-mac"]
+build-mac = ["secret", "make-mac"]
 lint = {shell = "black . && flake8 && isort --profile black ."}
 commit = "cz commit"
 release = {shell = "standard-version"}
