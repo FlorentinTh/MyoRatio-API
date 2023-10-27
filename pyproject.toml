@@ -12,7 +12,7 @@ serve = "myoratio:run"
 
 [tool.poe.tasks]
 secret = {shell = "python secret.py"}
-make-win = "pyinstaller --collect-all charset_normalizer --add-data \".env;.\" --console --clean --name MyoRatioAPI \"--icon=assets\\icons\\win\\app.ico\" server.py --noconfirm"
+make-win = "pyinstaller --collect-all charset_normalizer --add-data \".env:.\" --console --clean --name MyoRatioAPI \"--icon=assets\\icons\\win\\app.ico\" server.py --noconfirm"
 build-win = ["secret", "make-win"]
 make-mac = "pyinstaller --collect-all charset_normalizer --add-data \".env:.\" --console --clean --name MyoRatioAPI \"--icon=assets\\icons\\mac\\app.icns\" server.py --noconfirm"
 build-mac = ["secret", "make-mac"]
@@ -39,7 +39,7 @@ xlsxwriter = "^3.1.9"
 
 [tool.poetry.group.dev.dependencies]
 black = "^23.10.1"
-pyinstaller = "^5.13.0"
+pyinstaller = "^6.1.0"
 isort = "^5.12.0"
 commitizen = "^3.5.2"
 pre-commit = "^3.3.3"
