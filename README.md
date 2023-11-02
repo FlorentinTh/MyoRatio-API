@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="./src/assets/icons/app.png" alt="MyoRatio" height="200px" /><br />
+  <img src="./assets/icons/app.png" alt="MyoRatio" height="200px" /><br />
   <h1>MyoRatio</h1>
   <a href="https://github.com/FlorentinTh/MyoRatio-API/actions/workflows/github-code-scanning/codeql">
     <img src="https://img.shields.io/github/actions/workflow/status/FlorentinTh/MyoRatio-API/github-code-scanning/codeql?style=for-the-badge&label=CodeQL" alt="CodeQL" />
