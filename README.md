@@ -1,23 +1,13 @@
-<div align="center">
-  <img src="./assets/icons/app.png" alt="MyoRatio" height="200px" /><br />
-  <h1>MyoRatio</h1>
-  <a href="https://github.com/FlorentinTh/MyoRatio-API/actions/workflows/github-code-scanning/codeql">
-    <img src="https://img.shields.io/github/actions/workflow/status/FlorentinTh/MyoRatio-API/github-code-scanning/codeql?style=for-the-badge&label=CodeQL" alt="CodeQL" />
-  </a>
-  <a href="#">
-    <img src="https://img.shields.io/github/release-date/florentinth/MyoRatio-API?style=for-the-badge" alt="Release Date" />
-  </a>
-  <a href="https://github.com/FlorentinTh/MyoRatio-API/releases/latest">
-    <img src="https://img.shields.io/github/v/tag/FlorentinTh/MyoRatio-API?style=for-the-badge" />
-  </a>
-  <a href="#">
-    <img src="https://img.shields.io/badge/platforms-windows%20%26%20macOS%20-lightseagreen?style=for-the-badge" alt="Platforms" />
-  </a>
-  <a href="https://github.com/FlorentinTh/MyoRatio-API/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/florentinth/MyoRatio-API?style=for-the-badge" alt="License"/>
-  </a>
-</div>
-<br />
+<p align="center">
+  <img src="./assets/icons/app.png" alt="MyoRatio" height="200px" />
+</p>
+
+<span align="center">
+
+  # MyoRatio
+  [![CodeQL](https://img.shields.io/github/actions/workflow/status/FlorentinTh/MyoRatio-API/github-code-scanning/codeql?style=for-the-badge&label=CodeQL)](https://github.com/FlorentinTh/MyoRatio-API/actions/workflows/github-code-scanning/codeql) [![Release Date](https://img.shields.io/github/release-date/florentinth/MyoRatio-API?style=for-the-badge)](#) [![Tag](https://img.shields.io/github/v/tag/FlorentinTh/MyoRatio-API?style=for-the-badge)](https://github.com/FlorentinTh/MyoRatio-API/releases/latest) [![macOs](https://img.shields.io/badge/compatible-macOs?style=for-the-badge&logo=apple&label=macOs&color=lightseagreen)](#) [![Windows](https://img.shields.io/badge/compatible-windows?style=for-the-badge&logo=windows&label=windows&color=lightseagreen)](#) [![License](https://img.shields.io/github/license/florentinth/MyoRatio-API?style=for-the-badge&color=blue)](https://github.com/FlorentinTh/MyoRatio-API/blob/main/LICENSE)
+
+</span>
 
 ## Authors
 
